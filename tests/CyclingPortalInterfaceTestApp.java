@@ -1,3 +1,5 @@
+import cycling.*;
+
 /**
  * A short program to illustrate an app testing some minimal functionality of a
  * concrete implementation of the CyclingPortalInterface interface -- note you
@@ -18,8 +20,10 @@ public class CyclingPortalInterfaceTestApp {
     public static void main(String[] args) {
         System.out.println("The system compiled and started the execution...");
 
-//		MiniCyclingPortalInterface portal = new BadMiniCyclingPortal();
-//		CyclingPortalInterface portal = new BadCyclingPortal();
+        //cycling.MiniCyclingPortalInterface portal = new cycling.BadCyclingPortal();
+//		cycling.CyclingPortalInterface portal = new cycling.BadCyclingPortal();
+
+        MiniCyclingPortalInterface portal = new BadCyclingPortal();
 
         Race r = new Race("test", "testDescription");
 
@@ -29,8 +33,8 @@ public class CyclingPortalInterfaceTestApp {
 
         System.out.println(r2);
 
-//		assert (portal.getRaceIds().length == 0)
-//				: "Innitial SocialMediaPlatform not empty as required or not returning an empty array.";
+		assert (portal.getRaceIds().length == 0)
+				: "Initial CyclingPortal not empty as required or not returning an empty array.";
 
     }
 
