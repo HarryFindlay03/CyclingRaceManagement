@@ -11,9 +11,9 @@ public class Race {
     private String name;
     private String description;
     private int Id;
-    //private Arraylist<> results;
+    //TODO: private Arraylist<> results;
     private static ArrayList<Integer> raceIds = new ArrayList<Integer>();
-    //private ArrayList<Stage> stages;
+    //TODO: private ArrayList<Stage> stages;
     private ArrayList<Integer> teamsInRace;
 
     public Race(String name, String description) {
@@ -22,7 +22,7 @@ public class Race {
 
         if(raceIds.size() == 0) {
             Id = 1;
-            raceIds.add(1);
+            raceIds.add(Id);
         } else {
             int tempRaceId = raceIds.get(raceIds.size() - 1);
             Id = tempRaceId + 1;
@@ -38,6 +38,22 @@ public class Race {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getId() {
+        return Id;
     }
 
     public int getRaceId() {
