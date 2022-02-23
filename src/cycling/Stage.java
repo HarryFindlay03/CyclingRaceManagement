@@ -22,6 +22,19 @@ public class Stage {
     private static ArrayList<Integer> stageIds;
     //TODO: private static ArrayList<Segment> segments;
 
+    public Stage(String stageName, String description) {
+        this.stageName = stageName;
+        this.description = description;
+
+        if(stageIds.size() == 0) {
+            stageId = 0;
+            stageIds.add(stageId);
+        } else {
+            stageId = stageIds.get(stageIds.size() - 1) + 1;
+            stageIds.add(stageId);
+        }
+    }
+
     public String getStageName() {
         return stageName;
     }

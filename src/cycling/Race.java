@@ -13,7 +13,7 @@ public class Race {
     private int Id;
     //TODO: private Arraylist<> results;
     private static ArrayList<Integer> raceIds = new ArrayList<Integer>();
-    //TODO: private ArrayList<Stage> stages;
+    private ArrayList<Stage> stages;
     private ArrayList<Integer> teamsInRace;
 
     public Race(String name, String description) {
