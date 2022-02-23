@@ -20,7 +20,7 @@ public class Stage {
     private StageType type;
     private int stageId;
     private static ArrayList<Integer> stageIds;
-    //TODO: private static ArrayList<Segment> segments;
+    private static ArrayList<Segment> segments;
 
     public Stage(String stageName, String description) {
         this.stageName = stageName;
@@ -75,5 +75,12 @@ public class Stage {
         this.type = type;
     }
 
+    public ArrayList<Segment> getStageSegments( int stageId ) { return segments; }
+
+    public int addIntermediateSprintToStage(int stageId, double location) { return 0; }
+
+    public void removeSegment(int segmentId) {
+        segments.remove(Integer.valueOf(segmentId));
+    }
 
 }
