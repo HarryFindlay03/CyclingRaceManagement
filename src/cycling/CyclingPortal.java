@@ -184,8 +184,8 @@ public class CyclingPortal implements CyclingPortalInterface {
 				teamRidersIds = new int[team.getRiders().size()];
 				for(int i = 0; i < team.getRiders().size(); i++) {
 					teamRidersIds[i] = team.getRiders().get(i).getRiderId();
-					return teamRidersIds;
 				}
+				return teamRidersIds;
 			}
 		}
 
