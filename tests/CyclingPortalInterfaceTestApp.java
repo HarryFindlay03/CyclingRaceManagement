@@ -23,7 +23,7 @@ public class CyclingPortalInterfaceTestApp {
         //cycling.MiniCyclingPortalInterface portal = new cycling.BadCyclingPortal();
 //		cycling.CyclingPortalInterface portal = new cycling.BadCyclingPortal();
 
-        MiniCyclingPortalInterface portal = new BadCyclingPortal();
+        CyclingPortalInterface portal = new CyclingPortal();
 
         Race r = new Race("test", "testDescription");
 
@@ -35,6 +35,12 @@ public class CyclingPortalInterfaceTestApp {
 
 		assert (portal.getRaceIds().length == 0)
 				: "Initial CyclingPortal not empty as required or not returning an empty array.";
+
+        try {
+            portal.createTeam("testTeam", "testDescription");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
     }
 
