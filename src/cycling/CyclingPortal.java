@@ -201,7 +201,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 		//Loops through all the teams until the teamId is found that
 		//has been inputted for the rider, then it calls the addRider method
 		//for that specific team.
-		for(Team team : Team.getTeams()) {
+		for(Team team : CyclingPortalTeams) {
 			if(team.getTeamId() == teamID) {
 				team.addRider(newRider);
 			}
