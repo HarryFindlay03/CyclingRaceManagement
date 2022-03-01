@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class CyclingPortal implements CyclingPortalInterface {
 	private ArrayList<Team> CyclingPortalTeams = new ArrayList<Team>();
-
+	private ArrayList<Race> CyclingPortalRaces = new ArrayList<Race>();
 	//EXTRA PORTAL METHODS
 	public ArrayList<Team> getCyclingPortalTeams() {
 		return CyclingPortalTeams;
@@ -23,39 +23,101 @@ public class CyclingPortal implements CyclingPortalInterface {
 	//INTERFACE METHODS
 	@Override
 	public int[] getRaceIds() {
-		// TODO Auto-generated method stub
-		return null;
+		int[] tempArray = new int[CyclingPortalRaces.size()];
+		for(int i = 0; i < tempArray.length; i++ ) {
+			tempArray[i] = CyclingPortalRaces.get(i).getRaceId();
+		}
+		return tempArray;
 	}
 
 	@Override
 	public int createRace(String name, String description) throws IllegalNameException, InvalidNameException {
-		// TODO Auto-generated method stub
-		return 0;
+		for(Race race: CyclingPortalRaces) {
+			if(race.getName() == name) {
+				throw new IllegalNameException("Name already in the system!");
+			}
+		}
+
+		//InvalidNameException
+		if(name == null) {
+			throw new InvalidNameException("Name is null!");
+		}
+		if(name.isEmpty()) {
+			throw new InvalidNameException("Name has been left empty!");
+		}
+		//TODO check number of characters is not greater than system length
+
+		Race newRace = new Race(name, description);
+		CyclingPortalRaces.add(newRace);
+		return newRace.getId();
 	}
 
 	@Override
 	public String viewRaceDetails(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+
+		for(Race race : CyclingPortalRaces) {
+			if(race.getRaceId() == raceId) {
+				return race.toString();
+			}
+		}
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-
+		boolean removed = false;
+		for(Race race : CyclingPortalRaces) {
+			if(race.getRaceId() == raceId) {
+				removed = true;
+				CyclingPortalRaces.remove(race);
+			}
+		}
+		if (!removed) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
 	}
 
 	@Override
 	public int getNumberOfStages(int raceId) throws IDNotRecognisedException {
 		// TODO Auto-generated method stub
-		return 0;
+		for(Race race : CyclingPortalRaces) {
+			if(race.getRaceId() == raceId) {
+				return race.getNumOfStages();
+			}
+		}
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
 	public int addStageToRace(int raceId, String stageName, String description, double length, LocalDateTime startTime,
 			StageType type)
 			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException {
-		// TODO Auto-generated method stub
+
+		//IDNotRecognisedException, IllegalNameException, InvalidNameException
+		boolean idExists = false;
+		for (Race race : CyclingPortalRaces) {
+			if(race.getRaceId() == raceId) {
+				idExists = true;
+				for(Stage stage: race.getStages()) {
+					if(stage.getStageName() == stageName) {
+						throw new IllegalNameException("Name already in the system!");
+					}
+					if(stage.getStageName() == null) {
+						throw new InvalidNameException("Name is null!");
+					}
+					if(stage.getStageName().isEmpty()) {
+						throw new InvalidNameException("Name has been left empty!");
+					}
+					//TODO: InvalidNameException character system limit check
+					if(stage.getLength() < 5) {
+						throw new InvalidLengthException("Length needs to be greater than 5 (kilometers)!");
+					}
+				}
+			}
+		}
+		if (!idExists) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
 		return 0;
 	}
 
@@ -134,6 +196,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 			}
 		}
 		//TODO check number of characters is not greater than system length
+
 
 
 		// Creates a new Team

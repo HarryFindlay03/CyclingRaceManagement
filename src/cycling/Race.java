@@ -32,9 +32,19 @@ public class Race {
 
     @Override
     public String toString() {
-        String str = String.format("Race[name=%s, description=%s, Id=%x]", name, description, Id);
+        int numOfStages = stages.size();
+
+        int totalLength = 0;
+        for(Stage stage: stages) {
+            totalLength += stage.getLength();
+        }
+
+        String str = String.format("Race[name=%s, description=%s, Id=%x, numOfStages=%x, totalLength=%x]", name, description, Id, numOfStages, totalLength);
         return str;
     }
+    public int getNumOfStages() {return stages.size();}
+
+    public ArrayList<Stage> getStages() {return stages;}
 
     public String getName() {
         return name;
