@@ -5,14 +5,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Stage {
-
-    public enum StageType {
-        FLAT,
-        HIGH_MOUNTAIN,
-        MEDIUM_MOUNTAIN,
-        TT
-    }
-
     private String stageName;
     private String description;
     private double length;
@@ -22,9 +14,11 @@ public class Stage {
     private static ArrayList<Integer> stageIds;
     private static ArrayList<Segment> segments;
 
-    public Stage(String stageName, String description) {
+    public Stage(String stageName, String description, LocalDateTime startTime, StageType type) {
         this.stageName = stageName;
         this.description = description;
+        this.startTime = startTime;
+        this.type = type;
 
         if(stageIds.size() == 0) {
             stageId = 0;
@@ -33,6 +27,10 @@ public class Stage {
             stageId = stageIds.get(stageIds.size() - 1) + 1;
             stageIds.add(stageId);
         }
+    }
+
+    public int getStageId() {
+        return stageId;
     }
 
     public String getStageName() {
@@ -82,5 +80,4 @@ public class Stage {
     public void removeSegment(int segmentId) {
         segments.remove(Integer.valueOf(segmentId));
     }
-
 }

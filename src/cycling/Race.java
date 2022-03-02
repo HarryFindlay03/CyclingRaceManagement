@@ -69,4 +69,12 @@ public class Race {
     public int getRaceId() {
         return Id;
     }
+
+    public void addStageToRace(Stage stage) {
+        stages.add(stage);
+    }
+
+    public void removeStage(Stage stage) {
+        stages.remove(stage);
+    }
 }

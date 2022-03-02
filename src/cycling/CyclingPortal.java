@@ -118,25 +118,65 @@ public class CyclingPortal implements CyclingPortalInterface {
 		if (!idExists) {
 			throw new IDNotRecognisedException("ID not recognised in the system!");
 		}
-		return 0;
+
+		//Adding stage to race
+		Stage stageToAdd = new Stage(stageName, description, startTime, type);
+
+		for(Race race : CyclingPortalRaces) {
+			if(race.getRaceId() == raceId) {
+				race.addStageToRace(stageToAdd);
+			}
+		}
+		return stageToAdd.getStageId();
 	}
 
 	@Override
 	public int[] getRaceStages(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		int[] raceStages;
+		for(Race race : CyclingPortalRaces) {
+			if(race.getRaceId() == raceId) {
+				raceStages = new int[race.getNumOfStages()];
+				for(int i = 0; i < raceStages.length; i++) {
+					raceStages[i] = race.getStages().get(i).getStageId();
+				}
+				return raceStages;
+			}
+		}
+
+		//If return is not ran then ID has not been found in the system!
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
 	public double getStageLength(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return 0;
+		//check through each race in the system and then check each stage in the race for the id given
+		for(Race race : CyclingPortalRaces) {
+			for(Stage stage : race.getStages()) {
+				if(stage.getStageId() == stageId) {
+					return stage.getLength();
+				}
+			}
+		}
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
 	public void removeStageById(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
+		//check isFound needed as no return
+		boolean isFound = false;
 
+		for(Race race : CyclingPortalRaces) {
+			for(Stage stage : race.getStages()) {
+				if(stage.getStageId() == stageId) {
+					isFound = true;
+					race.removeStage(stage);
+				}
+			}
+		}
+
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
 	}
 
 	@Override
