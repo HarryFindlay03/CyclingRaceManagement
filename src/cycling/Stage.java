@@ -73,11 +73,17 @@ public class Stage {
         this.type = type;
     }
 
-    public ArrayList<Segment> getStageSegments( int stageId ) { return segments; }
+    public ArrayList<Segment> getStageSegments() { return segments; }
 
-    public int addIntermediateSprintToStage(int stageId, double location) { return 0; }
+    public void addIntermediateSprintToStage(IntermediateSprint intermediateSprint) {
+        segments.add(intermediateSprint);
+    }
 
-    public void removeSegment(int segmentId) {
-        segments.remove(Integer.valueOf(segmentId));
+    public void addCategorizedClimbToStage(CategorizedClimb categorizedClimb) {
+        segments.add(categorizedClimb);
+    }
+
+    public void removeSegment(Segment segment) {
+        segments.remove(segment);
     }
 }

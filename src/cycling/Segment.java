@@ -21,6 +21,10 @@ public class Segment {
         }
     }
 
+    public int getSegmentId() {
+        return segmentId;
+    }
+
     public double getLocation() { return location; }
 
     public void setLocation(double location) {

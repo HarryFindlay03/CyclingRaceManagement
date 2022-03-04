@@ -1,6 +1,7 @@
 package cycling;
 
 import java.io.IOException;
+import java.rmi.server.ExportException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -183,20 +184,88 @@ public class CyclingPortal implements CyclingPortalInterface {
 	public int addCategorizedClimbToStage(int stageId, Double location, SegmentType type, Double averageGradient,
 			Double length) throws IDNotRecognisedException, InvalidLocationException, InvalidStageStateException,
 			InvalidStageTypeException {
-		// TODO Auto-generated method stub
-		return 0;
+
+		for(Race race : CyclingPortalRaces) {
+			for(Stage stage : race.getStages()) {
+				if(stage.getStageId() == stageId) {
+					//stageId is found -> Other checks can be done
+
+					//If location for climb is set to be greater than the length of the stage
+					if(location > stage.getLength()) {
+						throw new InvalidLocationException("Location set outside the bounds of the stage!");
+					}
+
+					//TODO: StageStateExcepction -> need to work on the state of stages
+
+					//InvalidStageType
+					if(stage.getType() == StageType.TT) {
+						throw new InvalidStageStateException("Cannot add climb to a TT!");
+					}
+
+					CategorizedClimb climbToAdd = new CategorizedClimb(type, location, averageGradient, length);
+					stage.addCategorizedClimbToStage(climbToAdd);
+					return climbToAdd.getSegmentId();
+
+				}
+			}
+		}
+
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
 	public int addIntermediateSprintToStage(int stageId, double location) throws IDNotRecognisedException,
 			InvalidLocationException, InvalidStageStateException, InvalidStageTypeException {
-		// TODO Auto-generated method stub
-		return 0;
+		for(Race race : CyclingPortalRaces) {
+			for(Stage stage : race.getStages()) {
+				if(stage.getStageId() == stageId) {
+					//stageId is found -> Other checks can be done
+
+					//If location for sprint is set to be greater than the length of the stage
+					if(location > stage.getLength()) {
+						throw new InvalidLocationException("Location set outside the bounds of the stage!");
+					}
+
+					//TODO: StageStateExcepction -> need to work on the state of stages
+
+					//InvalidStageType
+					if(stage.getType() == StageType.TT) {
+						throw new InvalidStageStateException("Cannot add climb to a TT!");
+					}
+
+					IntermediateSprint newSprint = new IntermediateSprint(SegmentType.SPRINT, location);
+					stage.addIntermediateSprintToStage(newSprint);
+					return newSprint.getSegmentId();
+
+				}
+			}
+		}
+
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
 	public void removeSegment(int segmentId) throws IDNotRecognisedException, InvalidStageStateException {
-		// TODO Auto-generated method stub
+		//TODO: Stage states
+
+		boolean isFound = false;
+		for(Race race : CyclingPortalRaces) {
+			for(Stage stage : race.getStages()) {
+				for(Segment segment : stage.getStageSegments()) {
+					if(segment.getSegmentId() == segmentId) {
+						//Segment has been found
+						//Segment can now be removed
+						isFound = true;
+						stage.removeSegment(segment);
+					}
+				}
+			}
+		}
+
+		if(!isFound) {
+			//segmentId was not found
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
 
 	}
 

@@ -19,6 +19,7 @@ public class CategorizedClimb extends Segment{
     public double getLength() {
         return length;
     }
+
     public void setLength(double length) {
         this.length = length;
     }
