@@ -33,6 +33,10 @@ public class Team {
         riders.add(rider);
     }
 
+    public void removeRider(Rider rider) {
+        riders.remove(rider);
+    }
+
     public static ArrayList<Team> getTeams() {
         return teams;
     }

@@ -5,6 +5,7 @@ import java.rmi.server.ExportException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 
 /**
@@ -277,8 +278,27 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getStageSegments(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		int[] stageSegments;
+		for(Race race : CyclingPortalRaces) {
+			for(Stage stage : race.getStages()) {
+				if(stage.getStageId() == stageId) {
+					stageSegments = new int[stage.getStageSegments().size()];
+					ArrayList<Segment> tempList = new ArrayList<Segment>();
+
+					//sort the tempList based off of location in stage
+					tempList.sort(Comparator.comparing(Segment::getLocation));
+
+					//Placing the elements in tempList into the int[] array.
+					for(int i = 0; i < tempList.size(); i++) {
+						stageSegments[i] = tempList.get(i).getSegmentId();
+					}
+
+					return stageSegments;
+				}
+			}
+		}
+
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
@@ -384,7 +404,19 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public void removeRider(int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
+		boolean isFound = false;
+		for(Team team : CyclingPortalTeams) {
+			for(Rider rider : team.getRiders()) {
+				if(rider.getRiderId() == riderId) {
+					isFound = true;
+					team.removeRider(rider);
+				}
+			}
+		}
+
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
 
 	}
 
@@ -458,7 +490,18 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public void removeRaceByName(String name) throws NameNotRecognisedException {
-		// TODO Auto-generated method stub
+		boolean isFound = false;
+
+		for(Race race : CyclingPortalRaces) {
+			if(race.getName() == name) {
+				isFound = true;
+				CyclingPortalRaces.remove(race);
+			}
+		}
+
+		if(!isFound) {
+			throw new NameNotRecognisedException("Name not recognised in the system!");
+		}
 
 	}
 
