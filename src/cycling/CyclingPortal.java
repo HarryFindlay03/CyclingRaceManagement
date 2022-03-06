@@ -272,7 +272,27 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public void concludeStagePreparation(int stageId) throws IDNotRecognisedException, InvalidStageStateException {
-		// TODO Auto-generated method stub
+		// TODO Check this function works
+		boolean isFound = false;
+
+		for(Race race : CyclingPortalRaces) {
+			for(Stage stage : race.getStages()) {
+				if(stage.getStageId() == stageId) {
+					if(stage.getStageState()) {
+						//Stage is already waiting for results, cannot conclude something
+						//that has already been concluded.
+						throw new InvalidStageStateException("Stage not in the correct state!");
+					}
+					//stage has been found, do not need to throw IDNotRecognisedException
+					isFound = true;
+					//Setting stageState to 'waiting for results'
+					stage.setStageState(true);
+				}
+			}
+		}
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
 
 	}
 

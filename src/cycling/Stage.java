@@ -11,6 +11,10 @@ public class Stage {
     private LocalDateTime startTime;
     private StageType type;
     private int stageId;
+
+    //stageState: false -> nothing, true -> 'waiting for results'
+    private boolean stageState;
+
     private static ArrayList<Integer> stageIds;
     private static ArrayList<Segment> segments;
 
@@ -19,6 +23,7 @@ public class Stage {
         this.description = description;
         this.startTime = startTime;
         this.type = type;
+        stageState = false;
 
         if(stageIds.size() == 0) {
             stageId = 0;
@@ -75,6 +80,14 @@ public class Stage {
 
     public ArrayList<Segment> getStageSegments() { return segments; }
 
+    public boolean getStageState() {
+        return stageState;
+    }
+
+    public void setStageState(boolean stageState) {
+        this.stageState = stageState;
+    }
+
     public void addIntermediateSprintToStage(IntermediateSprint intermediateSprint) {
         segments.add(intermediateSprint);
     }
@@ -86,4 +99,5 @@ public class Stage {
     public void removeSegment(Segment segment) {
         segments.remove(segment);
     }
+
 }
