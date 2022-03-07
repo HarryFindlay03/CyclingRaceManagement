@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -444,7 +446,44 @@ public class CyclingPortal implements CyclingPortalInterface {
 	public void registerRiderResultsInStage(int stageId, int riderId, LocalTime... checkpoints)
 			throws IDNotRecognisedException, DuplicatedResultException, InvalidCheckpointsException,
 			InvalidStageStateException {
-		// TODO Auto-generated method stub
+		// TODO InvalidCheckpointsException
+			boolean isFoundStage = false;
+			boolean isFoundRider = false;
+
+			for(Race race: CyclingPortalRaces){
+				for(Stage stage: race.getStages()){
+					if(stage.getStageId()==stageId){
+						isFoundStage= true;
+						if(!stage.getStageState()) {
+							throw new InvalidStageStateException("Stage under development!");
+						}
+						for(Team team: CyclingPortalTeams){
+							for(Rider rider: team.getRiders()){
+								if(rider.getRiderId()==riderId){
+									isFoundRider = true;
+									//both ids found
+									for(Map.Entry<Integer, ArrayList<LocalTime>> elem: stage.getRiderToResult().entrySet()){
+										if(elem.getKey()==riderId) {
+											throw new DuplicatedResultException("Results already exist for this rider!");
+										}
+									}
+									stage.addResultToStage(riderId, checkpoints);
+
+								}
+
+							}
+						}
+					}
+				}
+			}
+
+			if (!isFoundStage){
+				throw new IDNotRecognisedException("Stage ID not recognised in the system!");
+			}
+			if(!isFoundRider) {
+				throw new IDNotRecognisedException("Rider ID not recognised in the system!");
+			}
+
 
 	}
 
