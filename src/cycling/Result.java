@@ -27,4 +27,8 @@ public class Result {
     public int getStageId() {
         return stageId;
     }
+
+    public LocalTime getFinishTime() {
+        return checkpoints.get(checkpoints.size() - 1);
+    }
 }
