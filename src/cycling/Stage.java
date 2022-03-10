@@ -21,8 +21,6 @@ public class Stage {
 
     private static ArrayList<Integer> stageIds;
     private static ArrayList<Segment> segments;
-    private ArrayList<LocalTime> checkpoints;
-    private HashMap<Integer, ArrayList<LocalTime>> riderToResult;
 
     public Stage(String stageName, String description, LocalDateTime startTime, StageType type) {
         this.stageName = stageName;
@@ -105,17 +103,5 @@ public class Stage {
     public void removeSegment(Segment segment) {
         segments.remove(segment);
     }
-
-    public void addResultToStage(int riderId, LocalTime... checkpoints) {
-        for(LocalTime check: checkpoints){
-            this.checkpoints.add(check);
-        }
-        riderToResult.put(riderId, this.checkpoints);
-    }
-    public HashMap<Integer, ArrayList<LocalTime>> getRiderToResult(){
-        return riderToResult;
-    }
-
-
 
 }
