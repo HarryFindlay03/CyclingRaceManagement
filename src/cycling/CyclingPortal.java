@@ -463,7 +463,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 									isFoundRider = true;
 									//both ids found
 									for(Result result : CyclingPortalResults) {
-										if(result.getRiderId() == riderId) {
+										if(result.getRiderId() == riderId && result.getStageId() == stageId) {
 											throw new DuplicatedResultException("Result already in system for rider!");
 										}
 									}
@@ -495,8 +495,28 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public LocalTime getRiderAdjustedElapsedTimeInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		//Finding result linked to riderId
+		for(Result result : CyclingPortalResults) {
+			if(result.getRiderId() == riderId && result.getStageId() == stageId) {
+				//Find the stage and then get all the results for the riders in the stage and compare their finishing times
+				for(Result allResult : CyclingPortalResults) {
+					if(allResult.getStageId() == stageId) {
+						//get all the results of the specific stage and compare them to the individual rider result
+						int timeDelta = result.getFinishTime().compareTo(allResult.getFinishTime());
+						//if timedifference of rider is less than one to rider infront then they have the same time
+						if(timeDelta < 1) {
+							result.setFinishTime(allResult.getFinishTime());
+							//adjusted time
+							return result.getFinishTime();
+						} else {
+							//unadjusted time
+							return result.getFinishTime();
+						}
+					}
+				}
+			}
+		}
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
