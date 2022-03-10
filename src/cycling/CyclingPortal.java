@@ -1,7 +1,6 @@
 package cycling;
 
 import java.io.IOException;
-import java.rmi.server.ExportException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import java.util.Map;
 public class CyclingPortal implements CyclingPortalInterface {
 	private ArrayList<Team> CyclingPortalTeams = new ArrayList<Team>();
 	private ArrayList<Race> CyclingPortalRaces = new ArrayList<Race>();
+	private ArrayList<Result> CyclingPortalResults = new ArrayList<Result>();
 	//EXTRA PORTAL METHODS
 	public ArrayList<Team> getCyclingPortalTeams() {
 		return CyclingPortalTeams;
@@ -462,13 +462,13 @@ public class CyclingPortal implements CyclingPortalInterface {
 								if(rider.getRiderId()==riderId){
 									isFoundRider = true;
 									//both ids found
-									for(Map.Entry<Integer, ArrayList<LocalTime>> elem: stage.getRiderToResult().entrySet()){
-										if(elem.getKey()==riderId) {
-											throw new DuplicatedResultException("Results already exist for this rider!");
+									for(Result result : CyclingPortalResults) {
+										if(result.getRiderId() == riderId) {
+											throw new DuplicatedResultException("Result already in system for rider!");
 										}
 									}
-									stage.addResultToStage(riderId, checkpoints);
-
+									Result result = new Result(stageId, riderId, checkpoints);
+									CyclingPortalResults.add(result);
 								}
 
 							}
@@ -495,8 +495,21 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public LocalTime getRiderAdjustedElapsedTimeInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		for(Race race : CyclingPortalRaces) {
+			for(Stage stage : race.getStages()) {
+				for(Team team : CyclingPortalTeams) {
+					for(Rider rider : team.getRiders()) {
+						HashMap<Integer, ArrayList<LocalTime>> result = stage.getRiderToResult();
+						//TODO: change this to method in result for getting finish time
+						for(Map.Entry<Integer, ArrayList<LocalTime>> elem: stage.getRiderToResult().entrySet()) {
+
+						}
+					}
+				}
+			}
+		}
+
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
