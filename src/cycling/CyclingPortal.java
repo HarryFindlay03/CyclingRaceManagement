@@ -495,21 +495,8 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public LocalTime getRiderAdjustedElapsedTimeInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		for(Race race : CyclingPortalRaces) {
-			for(Stage stage : race.getStages()) {
-				for(Team team : CyclingPortalTeams) {
-					for(Rider rider : team.getRiders()) {
-						HashMap<Integer, ArrayList<LocalTime>> result = stage.getRiderToResult();
-						//TODO: change this to method in result for getting finish time
-						for(Map.Entry<Integer, ArrayList<LocalTime>> elem: stage.getRiderToResult().entrySet()) {
-
-						}
-					}
-				}
-			}
-		}
-
-		throw new IDNotRecognisedException("ID not recognised in the system!");
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
