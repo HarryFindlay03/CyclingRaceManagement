@@ -434,25 +434,25 @@ public class CyclingPortal implements CyclingPortalInterface {
 			boolean isFoundStage = false;
 			boolean isFoundRider = false;
 
-			for(Race race: CyclingPortalRaces){
+			for(Race race: Race.getCyclingPortalRaces()){
 				for(Stage stage: race.getStages()){
 					if(stage.getStageId()==stageId){
 						isFoundStage= true;
 						if(!stage.getStageState()) {
 							throw new InvalidStageStateException("Stage under development!");
 						}
-						for(Team team: CyclingPortalTeams){
+						for(Team team: Team.getCyclingPortalTeams()){
 							for(Rider rider: team.getRiders()){
 								if(rider.getRiderId()==riderId){
 									isFoundRider = true;
 									//both ids found
-									for(Result result : CyclingPortalResults) {
+									for(Result result : Result.getCyclingPortalResults()) {
 										if(result.getRiderId() == riderId && result.getStageId() == stageId) {
 											throw new DuplicatedResultException("Result already in system for rider!");
 										}
 									}
 									Result result = new Result(stageId, riderId, checkpoints);
-									CyclingPortalResults.add(result);
+									Result.addResult(result);
 								}
 
 							}
@@ -480,13 +480,14 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public LocalTime getRiderAdjustedElapsedTimeInStage(int stageId, int riderId) throws IDNotRecognisedException {
 		//Finding result linked to riderId
-		for(Result result : CyclingPortalResults) {
+		for(Result result : Result.getCyclingPortalResults()) {
 			if(result.getRiderId() == riderId && result.getStageId() == stageId) {
 				//Find the stage and then get all the results for the riders in the stage and compare their finishing times
-				for(Result allResult : CyclingPortalResults) {
+				for(Result allResult : Result.getCyclingPortalResults()) {
 					if(allResult.getStageId() == stageId) {
 						//get all the results of the specific stage and compare them to the individual rider result
 						int timeDelta = result.getFinishTime().compareTo(allResult.getFinishTime());
+						//TODO: change compareTo
 						//if timedifference of rider is less than one to rider infront then they have the same time
 						if(timeDelta < 1) {
 							result.setFinishTime(allResult.getFinishTime());

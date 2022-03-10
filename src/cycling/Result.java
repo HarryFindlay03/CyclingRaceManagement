@@ -7,6 +7,7 @@ public class Result {
     private int stageId;
     private int riderId;
     private ArrayList<LocalTime> checkpoints;
+    private static ArrayList<Result> CyclingPortalResults = new ArrayList<Result>();
 
     public Result(int stageId, int riderId, LocalTime... checkpoints) {
         this.stageId = stageId;
@@ -14,6 +15,15 @@ public class Result {
         for(LocalTime check : checkpoints) {
             this.checkpoints.add(check);
         }
+    }
+    public static void addResult(Result result ) {
+        CyclingPortalResults.add(result);
+    }
+    public static void removeResult(Result result) {
+        CyclingPortalResults.remove(result);
+    }
+    public static ArrayList<Result> getCyclingPortalResults() {
+        return CyclingPortalResults;
     }
 
     public int getRiderId() {
