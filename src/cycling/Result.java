@@ -23,4 +23,8 @@ public class Result {
     public ArrayList<LocalTime> getCheckpoints() {
         return checkpoints;
     }
+
+    public int getStageId() {
+        return stageId;
+    }
 }
