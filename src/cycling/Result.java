@@ -31,4 +31,9 @@ public class Result {
     public LocalTime getFinishTime() {
         return checkpoints.get(checkpoints.size() - 1);
     }
+
+    public void setFinishTime(LocalTime finishTime) {
+        checkpoints.remove(checkpoints.size() - 1);
+        checkpoints.add(finishTime);
+    }
 }

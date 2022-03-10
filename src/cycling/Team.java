@@ -9,7 +9,7 @@ public class Team {
     private static ArrayList<Integer> teamIds = new ArrayList<Integer>();
     private ArrayList<Rider> riders = new ArrayList<Rider>();
 
-    private static ArrayList<Team> teams = new ArrayList<Team>();
+    private static ArrayList<Team> CyclingPortalTeams = new ArrayList<Team>();
 
     public Team(String name, String description) {
         this.name = name;
@@ -37,8 +37,16 @@ public class Team {
         riders.remove(rider);
     }
 
-    public static ArrayList<Team> getTeams() {
-        return teams;
+    public static ArrayList<Team> getCyclingPortalTeams() {
+        return CyclingPortalTeams;
+    }
+
+    public static void addTeam(Team team) {
+        CyclingPortalTeams.add(team);
+    }
+
+    public static void removeTeam(Team team) {
+        CyclingPortalTeams.remove(team);
     }
 
     public ArrayList<Rider> getRiders() {
