@@ -11,10 +11,11 @@ public class Race {
     private String name;
     private String description;
     private int Id;
-    //TODO: private Arraylist<> results;
     private static ArrayList<Integer> raceIds = new ArrayList<Integer>();
+
+    private static ArrayList<Race> CyclingPortalRaces = new ArrayList<Race>();
+
     private ArrayList<Stage> stages;
-    private ArrayList<Integer> teamsInRace;
 
     public Race(String name, String description) {
         this.name = name;
@@ -42,6 +43,19 @@ public class Race {
         String str = String.format("Race[name=%s, description=%s, Id=%x, numOfStages=%x, totalLength=%x]", name, description, Id, numOfStages, totalLength);
         return str;
     }
+
+    public static ArrayList<Race> getCyclingPortalRaces() {
+        return CyclingPortalRaces;
+    }
+
+    public static void addRace(Race race) {
+        CyclingPortalRaces.add(race);
+    }
+
+    public static void removeRace(Race race) {
+        CyclingPortalRaces.remove(race);
+    }
+
     public int getNumOfStages() {return stages.size();}
 
     public ArrayList<Stage> getStages() {return stages;}
