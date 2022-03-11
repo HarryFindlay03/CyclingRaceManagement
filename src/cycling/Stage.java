@@ -19,12 +19,14 @@ public class Stage {
     //stageState: false -> nothing, true -> 'waiting for results'
     private boolean stageState;
 
-    private static ArrayList<Integer> stageIds;
-    private static ArrayList<Segment> segments;
+    private static ArrayList<Integer> stageIds = new ArrayList<Integer>();
 
-    public Stage(String stageName, String description, LocalDateTime startTime, StageType type) {
+    private ArrayList<Segment> segments = new ArrayList<Segment>();
+
+    public Stage(String stageName, String description, double length, LocalDateTime startTime, StageType type) {
         this.stageName = stageName;
         this.description = description;
+        this.length = length;
         this.startTime = startTime;
         this.type = type;
         stageState = false;
