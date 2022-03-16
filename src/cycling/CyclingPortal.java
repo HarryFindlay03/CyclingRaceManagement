@@ -17,9 +17,6 @@ import java.util.Map;
  *
  */
 public class CyclingPortal implements CyclingPortalInterface {
-//	private ArrayList<Team> CyclingPortalTeams = new ArrayList<Team>();
-//	private ArrayList<Race> CyclingPortalRaces = new ArrayList<Race>();
-//	private ArrayList<Result> CyclingPortalResults = new ArrayList<Result>();
 
 	//INTERFACE METHODS
 	@Override
@@ -67,10 +64,12 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
 		boolean removed = false;
-		for(Race race : Race.getCyclingPortalRaces()) {
-			if(race.getRaceId() == raceId) {
-				removed = true;
+		for (Race race : Race.getCyclingPortalRaces()) {
+			if (race.getRaceId() == raceId) {
 				Race.removeRace(race);
+				removed = true;
+				//once removed break out of loop
+				break;
 			}
 		}
 		if (!removed) {
@@ -94,25 +93,28 @@ public class CyclingPortal implements CyclingPortalInterface {
 			StageType type)
 			throws IDNotRecognisedException, IllegalNameException, InvalidNameException, InvalidLengthException {
 
-		//IllegalNameException, InvalidNameException
+		if(stageName == null) {
+			throw new InvalidNameException("Name is null!");
+		}
+		if(stageName.isEmpty()) {
+			throw new InvalidNameException("Name has been left empty!");
+		}
+		if(stageName.length() > 30) {
+			throw new InvalidNameException("Name is too long!");
+		}
+		if(length < 5) {
+			throw new InvalidLengthException("Length needs to be greater than 5 (kilometers)!");
+		}
+
+		//IllegalNameException
 		for (Race race : Race.getCyclingPortalRaces()) {
 			if(race.getRaceId() == raceId) {
 				for(Stage stage: race.getStages()) {
 					if(stage.getStageName() == stageName) {
 						throw new IllegalNameException("Name already in the system!");
 					}
-					if(stage.getStageName() == null) {
-						throw new InvalidNameException("Name is null!");
-					}
-					if(stage.getStageName().isEmpty()) {
-						throw new InvalidNameException("Name has been left empty!");
-					}
-					//TODO: InvalidNameException character system limit check
-					if(stage.getLength() < 5) {
-						throw new InvalidLengthException("Length needs to be greater than 5 (kilometers)!");
-					}
 				}
-				Stage stageToAdd = new Stage(stageName, description, startTime, type);
+				Stage stageToAdd = new Stage(stageName, description, length, startTime, type);
 				race.addStageToRace(stageToAdd);
 				return stageToAdd.getStageId();
 			}
@@ -160,6 +162,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 				if(stage.getStageId() == stageId) {
 					isFound = true;
 					race.removeStage(stage);
+					break;
 				}
 			}
 		}
@@ -180,15 +183,20 @@ public class CyclingPortal implements CyclingPortalInterface {
 					//stageId is found -> Other checks can be done
 
 					//If location for climb is set to be greater than the length of the stage
-					if(location > stage.getLength()) {
+					if(location > stage.getLength() || location < 0) {
 						throw new InvalidLocationException("Location set outside the bounds of the stage!");
 					}
 
-					//TODO: StageStateExcepction -> need to work on the state of stages
+					if(stage.getStageState()) {
+						throw new InvalidStageStateException("Stage already concluded!");
+					}
 
 					//InvalidStageType
 					if(stage.getType() == StageType.TT) {
 						throw new InvalidStageStateException("Cannot add climb to a TT!");
+					}
+					if(location+length > stage.getLength()) {
+						throw new InvalidLocationException("Segment finishes outside the bounds of the stage!");
 					}
 
 					CategorizedClimb climbToAdd = new CategorizedClimb(type, location, averageGradient, length);
@@ -211,11 +219,13 @@ public class CyclingPortal implements CyclingPortalInterface {
 					//stageId is found -> Other checks can be done
 
 					//If location for sprint is set to be greater than the length of the stage
-					if(location > stage.getLength()) {
+					if(location > stage.getLength() || location < 0) {
 						throw new InvalidLocationException("Location set outside the bounds of the stage!");
 					}
 
-					//TODO: StageStateExcepction -> need to work on the state of stages
+					if(stage.getStageState()) {
+						throw new InvalidStageStateException("Stage is already concluded!");
+					}
 
 					//InvalidStageType
 					if(stage.getType() == StageType.TT) {
@@ -246,6 +256,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 						//Segment can now be removed
 						isFound = true;
 						stage.removeSegment(segment);
+						break;
 					}
 				}
 			}
@@ -291,7 +302,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 			for(Stage stage : race.getStages()) {
 				if(stage.getStageId() == stageId) {
 					stageSegments = new int[stage.getStageSegments().size()];
-					ArrayList<Segment> tempList = new ArrayList<Segment>();
+					ArrayList<Segment> tempList = stage.getStageSegments();
 
 					//sort the tempList based off of location in stage
 					tempList.sort(Comparator.comparing(Segment::getLocation));
@@ -331,7 +342,9 @@ public class CyclingPortal implements CyclingPortalInterface {
 				throw new InvalidNameException("Name contains whitespace!");
 			}
 		}
-		//TODO check number of characters is not greater than 30
+		if(name.length() > 30) {
+			throw new InvalidNameException("Name is too long!");
+		}
 
 
 
@@ -351,8 +364,9 @@ public class CyclingPortal implements CyclingPortalInterface {
 		boolean teamFound = false;
 		for(Team team : Team.getCyclingPortalTeams()) {
 			if(team.getTeamId() == teamId) {
-				teamFound = true;
 				Team.removeTeam(team);
+				teamFound = true;
+				break;
 			}
 		}
 
@@ -394,18 +408,28 @@ public class CyclingPortal implements CyclingPortalInterface {
 	public int createRider(int teamID, String name, int yearOfBirth)
 			throws IDNotRecognisedException, IllegalArgumentException {
 
-		Rider newRider = new Rider(teamID, name, yearOfBirth);
+		if(name == null) {
+			throw new IllegalArgumentException("Argument may be illegal or inappropriate ;)");
+		}
+		if(name.isEmpty()) {
+			throw new IllegalArgumentException("Argument may be illegal or inappropriate ;)");
+		}
+		if(name.length() > 30) {
+			throw new IllegalArgumentException("Argument may be illegal or inappropriate ;)");
+		}
 
 		//Loops through all the teams until the teamId is found that
 		//has been inputted for the rider, then it calls the addRider method
 		//for that specific team.
 		for(Team team : Team.getCyclingPortalTeams()) {
 			if(team.getTeamId() == teamID) {
+				Rider newRider = new Rider(teamID, name, yearOfBirth);
 				team.addRider(newRider);
+				return newRider.getRiderId();
 			}
 		}
 
-		return newRider.getRiderId();
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
@@ -414,8 +438,9 @@ public class CyclingPortal implements CyclingPortalInterface {
 		for(Team team : Team.getCyclingPortalTeams()) {
 			for(Rider rider : team.getRiders()) {
 				if(rider.getRiderId() == riderId) {
-					isFound = true;
 					team.removeRider(rider);
+					isFound = true;
+					break;
 				}
 			}
 		}
