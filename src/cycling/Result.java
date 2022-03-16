@@ -1,6 +1,7 @@
 package cycling;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class Result {
@@ -46,4 +47,13 @@ public class Result {
         checkpoints.remove(checkpoints.size() - 1);
         checkpoints.add(finishTime);
     }
+
+    public LocalTime getElapsedTime(LocalTime startTime, LocalTime finishTime) {
+
+        LocalTime ElapsedTime;
+        long seconds = ChronoUnit.HOURS.between(finishTime, startTime);
+        ElapsedTime = LocalTime.ofSecondOfDay(seconds);
+        return ElapsedTime;
+    }
+
 }
