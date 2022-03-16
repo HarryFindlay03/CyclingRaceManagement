@@ -49,7 +49,6 @@ public class Result {
     }
 
     public LocalTime getElapsedTime(LocalTime startTime, LocalTime finishTime) {
-
         LocalTime ElapsedTime;
         long seconds = ChronoUnit.HOURS.between(finishTime, startTime);
         ElapsedTime = LocalTime.ofSecondOfDay(seconds);

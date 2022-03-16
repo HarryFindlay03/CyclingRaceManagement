@@ -498,20 +498,25 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public LocalTime[] getRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
+		// TODO: test this
 		LocalTime[] resultArray;
 		for(Result result : Result.getCyclingPortalResults()) {
 			if (result.getRiderId() == riderId && result.getStageId() == stageId) {
-				resultArray = new LocalTime[Result.getCyclingPortalResults().size()];
+				//+1 to make space for elapsed time
+				resultArray = new LocalTime[Result.getCyclingPortalResults().size()+1];
 				for (int i = 0; i < result.getCheckpoints().size(); i++) {
 					resultArray[i] = result.getCheckpoints().get(i);
-					resultArray[i] = result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
+					//all times have been added, then add elapsedtime
+					if(resultArray.length== Result.getCyclingPortalResults().size()) {
+						resultArray[i] = result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
+					}
 					return resultArray;
 				}
 
 			}
 		}
 		throw new IDNotRecognisedException("Id not recognised in the system!");
+
 	}
 
 	@Override
