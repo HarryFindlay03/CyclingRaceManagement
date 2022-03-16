@@ -67,12 +67,12 @@ public class Result {
     }
 
     /**
-     *
+     * Static method as it can does not need an instance to be used
      * @param startTime time the stage starts
      * @param finishTime time of the finish time
      * @return The elapsed time taken for the rider in seconds
      */
-    public LocalTime getElapsedTime(LocalTime startTime, LocalTime finishTime) {
+    public static LocalTime getElapsedTime(LocalTime startTime, LocalTime finishTime) {
         int hours = (int) ChronoUnit.HOURS.between(startTime, finishTime);
         int minutes = (int) ChronoUnit.MINUTES.between(startTime, finishTime) % 60;
         int seconds = (int) ChronoUnit.SECONDS.between(startTime, finishTime) % 60;

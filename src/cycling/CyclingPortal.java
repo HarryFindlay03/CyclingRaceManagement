@@ -507,7 +507,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 					resultArray[i] = result.getCheckpoints().get(i);
 				}
 				//adding elapsed time to end of array
-				resultArray[resultArray.length - 1] = result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
+				resultArray[resultArray.length - 1] = Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
 				return resultArray;
 			}
 		}
@@ -517,24 +517,42 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public LocalTime getRiderAdjustedElapsedTimeInStage(int stageId, int riderId) throws IDNotRecognisedException {
+		//TODO -> do we need to work with nanoseconds?
+		//Checking the stage type, if stagetype is TT then do not adjust the time
+		StageType type = null;
+		for(Race race : Race.getCyclingPortalRaces()) {
+			for(Stage stage : race.getStages()) {
+				type = stage.getType();
+			}
+		}
+
 		//Finding result linked to riderId
 		for(Result result : Result.getCyclingPortalResults()) {
 			if(result.getRiderId() == riderId && result.getStageId() == stageId) {
 				//Find the stage and then get all the results for the riders in the stage and compare their finishing times
 				for(Result allResult : Result.getCyclingPortalResults()) {
-					if(allResult.getStageId() == stageId) {
-						//get all the results of the specific stage and compare them to the individual rider result
-						int timeDelta = result.getFinishTime().compareTo(allResult.getFinishTime());
-						//TODO: change compareTo
-						//if timedifference of rider is less than one to rider infront then they have the same time
-						if(timeDelta < 1) {
-							result.setFinishTime(allResult.getFinishTime());
-							//adjusted time
-							return result.getFinishTime();
-						} else {
-							//unadjusted time
-							return result.getFinishTime();
+					if(allResult.getStageId() == stageId && allResult.getRiderId() != riderId) {
+						if(type == null) {
+							throw new IDNotRecognisedException("ID not recognised in the system!");
 						}
+						if(type == StageType.TT) {
+							//Return elapsed time
+							return Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
+						}
+						//Stage type is not a TT and a stage has been found
+						LocalTime riderFinish = result.getFinishTime();
+						LocalTime otherFinish = allResult.getFinishTime();
+
+
+
+						if(Result.getElapsedTime(otherFinish, riderFinish).getSecond() < 1) {
+							//update the finish time in the stage for the rider
+							//result.setFinishTime(allResult.getFinishTime());
+							System.out.println("Changing elapsed time");
+							return Result.getElapsedTime(allResult.getCheckpoints().get(0), allResult.getFinishTime());
+						}
+						//Gap was greater than (or equal to) a second.
+						return Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
 					}
 				}
 			}
@@ -544,8 +562,18 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public void deleteRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
+		boolean isFound = false;
+		for(Result result : Result.getCyclingPortalResults()) {
+			if(result.getRiderId() == riderId && result.getStageId() == stageId) {
+				isFound = true;
+				Result.removeResult(result);
+				break;
+			}
+		}
 
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recongised in the system!");
+		}
 	}
 
 	@Override
