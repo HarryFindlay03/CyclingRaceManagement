@@ -581,7 +581,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getRidersRankInStage(int stageId) throws IDNotRecognisedException {
-		//TODO does not work
 		int[] riderRank;
 		ArrayList<Result> resultsInStage = new ArrayList<Result>();
 		boolean isFound = false;

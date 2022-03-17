@@ -7,6 +7,6 @@ public class ResultComparator implements Comparator<Result> {
     @Override
     public int compare(Result r1, Result r2) {
         int result = Result.getElapsedTime(r1.getCheckpoints().get(0), r1.getFinishTime()).compareTo(Result.getElapsedTime(r2.getCheckpoints().get(0), r2.getFinishTime()));
-        return -1 * result;
+        return result;
     }
 }
