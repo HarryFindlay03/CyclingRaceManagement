@@ -1,13 +1,16 @@
 package cycling;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+
+
+//TODOs
+//getRankInStage
+//getAdjustedRankInStage
+//
 
 
 /**
@@ -578,8 +581,35 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getRidersRankInStage(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		//TODO does not work
+		int[] riderRank;
+		ArrayList<Result> resultsInStage = new ArrayList<Result>();
+		boolean isFound = false;
+		//get all the results in a stage linked with the stageId
+		for(Result result : Result.getCyclingPortalResults()) {
+			if(result.getStageId() == stageId) {
+				isFound = true;
+				resultsInStage.add(result);
+			}
+		}
+
+		//If there are no results in the stage, then the stage id does not match
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
+
+		//sort all the results
+		ArrayList<Result> sorted = new ArrayList<>(resultsInStage);
+		Comparator<Result> comparator = new ResultComparator();
+		sorted.sort(comparator);
+
+		riderRank = new int[sorted.size()];
+		//place them into the return array
+		for(int i = 0; i < sorted.size(); i++) {
+			riderRank[i] = sorted.get(i).getRiderId();
+		}
+
+		return riderRank;
 	}
 
 	@Override
