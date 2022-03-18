@@ -77,6 +77,14 @@ public class Result {
         this.points += points;
     }
 
+    public int getMountainPoints() {
+        return mountainPoints;
+    }
+
+    public void addMountainPoints(int mountainPoints) {
+        this.mountainPoints += mountainPoints;
+    }
+
     /**
      * Static method to compute the elapsed time between two inputted LocalTime objects
      * @param startTime time the stage starts

@@ -720,8 +720,105 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getRidersMountainPointsInStage(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+
+		int[] returnArr;
+
+		int[] c4Points = new int[]{1};
+		int[] c3Points = new int[]{2, 1};
+		int[] c2Points = new int[]{5, 3, 2, 1};
+		int[] c1Points = new int[]{10, 8, 6, 4, 2, 1};
+		int[] hcPoints = new int[]{20, 15, 12, 10, 8, 6, 4, 2};
+
+		for(Race race : Race.getCyclingPortalRaces()) {
+			for(Stage stage : race.getStages()) {
+				//Get the orderedList of results in the stage (like getRidersRankInStage but we want the result objects)
+				ArrayList<Result> resultsInStage = new ArrayList<Result>();
+				for(Result result : Result.getCyclingPortalResults()) {
+					if(result.getStageId() == stageId) {
+						resultsInStage.add(result);
+					}
+				}
+
+				ArrayList<Result> endSortedResults = new ArrayList<>(resultsInStage);
+				Comparator<Result> comparator = new ResultComparator();
+				endSortedResults.sort(comparator);
+
+				//find where the Climbs are
+				ArrayList<Segment> segmentsInStage = stage.getStageSegments();
+				ArrayList<Integer> climbIndexes = new ArrayList<Integer>();
+
+				for(int i = 0; i < segmentsInStage.size(); i++) {
+					if(segmentsInStage.get(i).getType() != SegmentType.SPRINT) {
+						//i+1 to ignore start time in checkpoints
+						climbIndexes.add(i+1);
+					}
+				}
+
+				for(int j = 0; j < climbIndexes.size(); j++) {
+					//-1 as startTime is not considered a segment
+					int index = climbIndexes.get(j) - 1;
+					Comparator<Result> checkpointsComparator = new ResultCheckpointsComparator(climbIndexes.get(j));
+					ArrayList<Result> sorted = new ArrayList<>(resultsInStage);
+					sorted.sort(checkpointsComparator);
+
+					if(segmentsInStage.get(index).getType() == SegmentType.C4) {
+						for(int i = 0; i < sorted.size(); i++) {
+							if(i == 0) {
+								sorted.get(i).addMountainPoints(c4Points[i]);
+							} else {
+								sorted.get(i).addMountainPoints(0);
+							}
+						}
+					}
+					if(segmentsInStage.get(index).getType() == SegmentType.C3) {
+						for(int i = 0; i < sorted.size(); i++) {
+							if(i < 2) {
+								sorted.get(i).addMountainPoints(c3Points[i]);
+							} else {
+								sorted.get(i).addMountainPoints(0);
+							}
+						}
+					}
+					if(segmentsInStage.get(index).getType() == SegmentType.C2) {
+						for(int i = 0; i < sorted.size(); i++) {
+							if(i < 4) {
+								sorted.get(i).addMountainPoints(c2Points[i]);
+							} else {
+								sorted.get(i).addMountainPoints(0);
+							}
+						}
+					}
+					if(segmentsInStage.get(index).getType() == SegmentType.C1) {
+						for(int i = 0; i < sorted.size(); i++) {
+							if(i < 6) {
+								sorted.get(i).addMountainPoints(c1Points[i]);
+							} else {
+								sorted.get(i).addMountainPoints(0);
+							}
+						}
+					}
+					if(segmentsInStage.get(index).getType() == SegmentType.HC) {
+						for(int i = 0; i < sorted.size(); i++) {
+							if(i < 8) {
+								sorted.get(i).addMountainPoints(hcPoints[i]);
+							} else {
+								sorted.get(i).addMountainPoints(0);
+							}
+						}
+					}
+				}
+
+				//adding points into returnArr
+				returnArr = new int[endSortedResults.size()];
+				for(int z = 0; z < endSortedResults.size(); z++) {
+					returnArr[z] = endSortedResults.get(z).getMountainPoints();
+				}
+
+				return returnArr;
+			}
+		}
+
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
