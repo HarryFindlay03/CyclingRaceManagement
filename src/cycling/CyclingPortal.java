@@ -123,7 +123,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 						throw new IllegalNameException("Name already in the system!");
 					}
 				}
-				Stage stageToAdd = new Stage(stageName, description, length, startTime, type);
+				Stage stageToAdd = new Stage(raceId, stageName, description, length, startTime, type);
 				race.addStageToRace(stageToAdd);
 				return stageToAdd.getStageId();
 			}
@@ -485,7 +485,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 											throw new DuplicatedResultException("Result already in system for rider!");
 										}
 									}
-									Result result = new Result(stageId, riderId, checkpoints);
+									Result result = new Result(stage.getRaceId(), stageId, riderId, checkpoints);
 									Result.addResult(result);
 								}
 
@@ -876,7 +876,20 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getRidersGeneralClassificationRank(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
+		//foreach rider in the race create a new RaceResult Object for them
+
+		int[] returnArr;
+
+		for(Team team : Team.getCyclingPortalTeams()) {
+			for(Rider rider : team.getRiders()) {
+				for(Result result : Result.getCyclingPortalResults()) {
+					if(result.getRiderId() == rider.getRiderId() && result.getRaceId() == raceId) {
+						//now we can do the logic
+
+					}
+				}
+			}
+		}
 		return null;
 	}
 
