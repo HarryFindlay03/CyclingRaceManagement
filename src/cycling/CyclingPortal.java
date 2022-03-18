@@ -876,20 +876,42 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getRidersGeneralClassificationRank(int raceId) throws IDNotRecognisedException {
-		//foreach rider in the race create a new RaceResult Object for them
-
+		//TODO: get working
 		int[] returnArr;
-
+		//Cache a list of riders so that a nested for loop is not needed
+		ArrayList<Rider> riders = new ArrayList<Rider>();
+		//foreach rider in the race create a new RaceResult Object for them
 		for(Team team : Team.getCyclingPortalTeams()) {
 			for(Rider rider : team.getRiders()) {
-				for(Result result : Result.getCyclingPortalResults()) {
-					if(result.getRiderId() == rider.getRiderId() && result.getRaceId() == raceId) {
-						//now we can do the logic
-
-					}
-				}
+				riders.add(rider);
+				RaceResult raceResult = new RaceResult(raceId, rider.getRiderId());
+				RaceResult.addRaceResult(raceResult);
 			}
 		}
+
+		//for each stage in a race and for each rider add to totalElapsedTime
+		//This will require converting
+		for(Rider rider : riders) {
+			RaceResult riderRaceResult = null;
+			for(RaceResult raceResult : RaceResult.getCyclingPortalRaceResults()) {
+				if(raceResult.getRaceId() == raceId && raceResult.getRiderId() == rider.getRiderId()) {
+					//this should not be a copy
+					//changing riderRaceResult elsewhere should also change raceResult
+					riderRaceResult = raceResult;
+				}
+			}
+			if(riderRaceResult == null) {
+				throw new IDNotRecognisedException("ID not recognised in the system!");
+			}
+
+			for(Result result : Result.getCyclingPortalResults()) {
+				if(result.getRaceId() == raceId && result.getRiderId() == rider.getRiderId()) {
+					//TODO: convert the LocalTime to a duration.
+					//Doesn't matter what order elapsedTimes are added up
+					riderRaceResult.addToElapsedTime(Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime()));
+				}
+			}
+ 		}
 		return null;
 	}
 

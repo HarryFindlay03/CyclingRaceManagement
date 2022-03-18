@@ -49,7 +49,7 @@ public class RaceResult {
     }
 
     public void addToElapsedTime(Duration duration) {
-        //TODO add to the duration.
+        totalElapsedTime.plus(duration);
     }
 
     public int getTotalPoints() {
