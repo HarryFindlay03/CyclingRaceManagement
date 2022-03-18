@@ -20,6 +20,12 @@ import java.util.Comparator;
  *
  */
 public class CyclingPortal implements CyclingPortalInterface {
+	//CONSTANT POINTS ARRAYS
+	private final int[] flatPoints = new int[]{50, 30, 20, 18, 16, 14, 12, 10, 8, 7, 6, 5, 4, 3, 2};
+	private final int[] mediumMountainPoints = new int[]{30, 25, 22, 19, 17, 15, 13, 11, 9, 7, 6, 5, 4, 3, 2};
+	private final int[] highMountainPoints = new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+	private final int[] ttPoints = new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+	private final int[] intSprintPoints = new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
 	//INTERFACE METHODS
 	@Override
@@ -546,8 +552,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 						LocalTime riderFinish = result.getFinishTime();
 						LocalTime otherFinish = allResult.getFinishTime();
 
-
-
 						if(Result.getElapsedTime(otherFinish, riderFinish).getSecond() < 1) {
 							//update the finish time in the stage for the rider
 							//result.setFinishTime(allResult.getFinishTime());
@@ -619,8 +623,99 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getRidersPointsInStage(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		int[] returnArr;
+
+		for(Race race : Race.getCyclingPortalRaces()) {
+			for(Stage stage : race.getStages()) {
+				if(stage.getStageId() == stageId) {
+					//Get the orderedList of results in the stage (like getRidersRankInStage but we want the result objects)
+					ArrayList<Result> resultsInStage = new ArrayList<Result>();
+					for(Result result : Result.getCyclingPortalResults()) {
+						if(result.getStageId() == stageId) {
+							resultsInStage.add(result);
+						}
+					}
+
+					ArrayList<Result> endSortedResults = new ArrayList<>(resultsInStage);
+					Comparator<Result> comparator = new ResultComparator();
+					endSortedResults.sort(comparator);
+
+					//Depending on the stage type assign the points differently
+					if(stage.getType() == StageType.FlAT) {
+						for(int i = 0; i < endSortedResults.size(); i++) {
+							if(i < 15) {
+								endSortedResults.get(i).addPoints(flatPoints[i]);
+							} else {
+								endSortedResults.get(i).addPoints(0);
+							}
+						}
+					}
+					if(stage.getType() == StageType.MEDIUM_MOUNTAIN) {
+						for(int i = 0; i < endSortedResults.size(); i++) {
+							if(i < 15) {
+								endSortedResults.get(i).addPoints(mediumMountainPoints[i]);
+							} else {
+								endSortedResults.get(i).addPoints(0);
+							}
+						}
+					}
+					if(stage.getType() == StageType.HIGH_MOUNTAIN) {
+						for(int i = 0; i < endSortedResults.size(); i++) {
+							if(i < 15) {
+								endSortedResults.get(i).addPoints(highMountainPoints[i]);
+							} else {
+								endSortedResults.get(i).addPoints(0);
+							}
+						}
+					}
+					if(stage.getType() == StageType.TT) {
+						for(int i = 0; i < endSortedResults.size(); i++) {
+							if(i < 15) {
+								endSortedResults.get(i).addPoints(ttPoints[i]);
+							} else {
+								endSortedResults.get(i).addPoints(0);
+							}
+						}
+					}
+
+					//Working out sprint position points
+
+					//find where the intSprints are
+					//Find the position where the sprints are
+					ArrayList<Segment> segmentsInStage = stage.getStageSegments();
+					ArrayList<Integer> sprintIndexes = new ArrayList<Integer>();
+					for(int i = 0; i < segmentsInStage.size(); i++) {
+						if(segmentsInStage.get(i).getType() == SegmentType.SPRINT) {
+							//i+1 to ignore the startTime in the checkpoints list
+							sprintIndexes.add(i+1);
+						}
+					}
+
+					for(int j = 0; j < sprintIndexes.size(); j++) {
+						Comparator<Result> checkpointsComparator = new ResultCheckpointsComparator(sprintIndexes.get(j));
+						ArrayList<Result> sorted = new ArrayList<>(resultsInStage);
+						sorted.sort(checkpointsComparator);
+
+						for(int x = 0; x < sorted.size(); x++) {
+							if(x < 15) {
+								sorted.get(x).addPoints(intSprintPoints[x]);
+							} else {
+								sorted.get(x).addPoints(0);
+							}
+						}
+					}
+
+					//adding points into returnArr
+					returnArr = new int[endSortedResults.size()];
+					for(int z = 0; z < endSortedResults.size(); z++) {
+						returnArr[z] = endSortedResults.get(z).getPoints();
+					}
+
+					return returnArr;
+				}
+			}
+		}
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override

@@ -10,6 +10,9 @@ public class Result {
     private int riderId;
     private int resultId;
 
+    private int points = 0;
+    private int mountainPoints = 0;
+
     private static ArrayList<Integer> resultIds = new ArrayList<Integer>();
 
     private ArrayList<LocalTime> checkpoints = new ArrayList<LocalTime>();
@@ -66,8 +69,16 @@ public class Result {
         checkpoints.add(finishTime);
     }
 
+    public int getPoints() {
+        return points;
+    }
+
+    public void addPoints(int points) {
+        this.points += points;
+    }
+
     /**
-     * Static method as it can does not need an instance to be used
+     * Static method to compute the elapsed time between two inputted LocalTime objects
      * @param startTime time the stage starts
      * @param finishTime time of the finish time
      * @return The elapsed time taken for the rider in seconds
