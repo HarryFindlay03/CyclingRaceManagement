@@ -1,13 +1,16 @@
 package cycling;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+
+
+//TODOs
+//getRankInStage
+//getAdjustedRankInStage
+//
 
 
 /**
@@ -17,6 +20,12 @@ import java.util.Map;
  *
  */
 public class CyclingPortal implements CyclingPortalInterface {
+	//CONSTANT POINTS ARRAYS
+	private final int[] flatPoints = new int[]{50, 30, 20, 18, 16, 14, 12, 10, 8, 7, 6, 5, 4, 3, 2};
+	private final int[] mediumMountainPoints = new int[]{30, 25, 22, 19, 17, 15, 13, 11, 9, 7, 6, 5, 4, 3, 2};
+	private final int[] highMountainPoints = new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+	private final int[] ttPoints = new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+	private final int[] intSprintPoints = new int[]{20, 17, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 
 	//INTERFACE METHODS
 	@Override
@@ -498,30 +507,59 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public LocalTime[] getRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		LocalTime[] resultArray;
+		for(Result result : Result.getCyclingPortalResults()) {
+			if (result.getRiderId() == riderId && result.getStageId() == stageId) {
+				//+1 to make space for elapsed time
+				resultArray = new LocalTime[result.getCheckpoints().size()+1];
+				for (int i = 0; i < result.getCheckpoints().size(); i++) {
+					resultArray[i] = result.getCheckpoints().get(i);
+				}
+				//adding elapsed time to end of array
+				resultArray[resultArray.length - 1] = Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
+				return resultArray;
+			}
+		}
+		throw new IDNotRecognisedException("Id not recognised in the system!");
+
 	}
 
 	@Override
 	public LocalTime getRiderAdjustedElapsedTimeInStage(int stageId, int riderId) throws IDNotRecognisedException {
+		//TODO -> do we need to work with nanoseconds?
+		//Checking the stage type, if stagetype is TT then do not adjust the time
+		StageType type = null;
+		for(Race race : Race.getCyclingPortalRaces()) {
+			for(Stage stage : race.getStages()) {
+				type = stage.getType();
+			}
+		}
+
 		//Finding result linked to riderId
 		for(Result result : Result.getCyclingPortalResults()) {
 			if(result.getRiderId() == riderId && result.getStageId() == stageId) {
 				//Find the stage and then get all the results for the riders in the stage and compare their finishing times
 				for(Result allResult : Result.getCyclingPortalResults()) {
-					if(allResult.getStageId() == stageId) {
-						//get all the results of the specific stage and compare them to the individual rider result
-						int timeDelta = result.getFinishTime().compareTo(allResult.getFinishTime());
-						//TODO: change compareTo
-						//if timedifference of rider is less than one to rider infront then they have the same time
-						if(timeDelta < 1) {
-							result.setFinishTime(allResult.getFinishTime());
-							//adjusted time
-							return result.getFinishTime();
-						} else {
-							//unadjusted time
-							return result.getFinishTime();
+					if(allResult.getStageId() == stageId && allResult.getRiderId() != riderId) {
+						if(type == null) {
+							throw new IDNotRecognisedException("ID not recognised in the system!");
 						}
+						if(type == StageType.TT) {
+							//Return elapsed time
+							return Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
+						}
+						//Stage type is not a TT and a stage has been found
+						LocalTime riderFinish = result.getFinishTime();
+						LocalTime otherFinish = allResult.getFinishTime();
+
+						if(Result.getElapsedTime(otherFinish, riderFinish).getSecond() < 1) {
+							//update the finish time in the stage for the rider
+							//result.setFinishTime(allResult.getFinishTime());
+							System.out.println("Changing elapsed time");
+							return Result.getElapsedTime(allResult.getCheckpoints().get(0), allResult.getFinishTime());
+						}
+						//Gap was greater than (or equal to) a second.
+						return Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
 					}
 				}
 			}
@@ -531,14 +569,50 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public void deleteRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
+		boolean isFound = false;
+		for(Result result : Result.getCyclingPortalResults()) {
+			if(result.getRiderId() == riderId && result.getStageId() == stageId) {
+				isFound = true;
+				Result.removeResult(result);
+				break;
+			}
+		}
 
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recongised in the system!");
+		}
 	}
 
 	@Override
 	public int[] getRidersRankInStage(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		int[] riderRank;
+		ArrayList<Result> resultsInStage = new ArrayList<Result>();
+		boolean isFound = false;
+		//get all the results in a stage linked with the stageId
+		for(Result result : Result.getCyclingPortalResults()) {
+			if(result.getStageId() == stageId) {
+				isFound = true;
+				resultsInStage.add(result);
+			}
+		}
+
+		//If there are no results in the stage, then the stage id does not match
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
+
+		//sort all the results
+		ArrayList<Result> sorted = new ArrayList<>(resultsInStage);
+		Comparator<Result> comparator = new ResultComparator();
+		sorted.sort(comparator);
+
+		riderRank = new int[sorted.size()];
+		//place them into the return array
+		for(int i = 0; i < sorted.size(); i++) {
+			riderRank[i] = sorted.get(i).getRiderId();
+		}
+
+		return riderRank;
 	}
 
 	@Override
@@ -549,8 +623,99 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getRidersPointsInStage(int stageId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		int[] returnArr;
+
+		for(Race race : Race.getCyclingPortalRaces()) {
+			for(Stage stage : race.getStages()) {
+				if(stage.getStageId() == stageId) {
+					//Get the orderedList of results in the stage (like getRidersRankInStage but we want the result objects)
+					ArrayList<Result> resultsInStage = new ArrayList<Result>();
+					for(Result result : Result.getCyclingPortalResults()) {
+						if(result.getStageId() == stageId) {
+							resultsInStage.add(result);
+						}
+					}
+
+					ArrayList<Result> endSortedResults = new ArrayList<>(resultsInStage);
+					Comparator<Result> comparator = new ResultComparator();
+					endSortedResults.sort(comparator);
+
+					//Depending on the stage type assign the points differently
+					if(stage.getType() == StageType.FlAT) {
+						for(int i = 0; i < endSortedResults.size(); i++) {
+							if(i < 15) {
+								endSortedResults.get(i).addPoints(flatPoints[i]);
+							} else {
+								endSortedResults.get(i).addPoints(0);
+							}
+						}
+					}
+					if(stage.getType() == StageType.MEDIUM_MOUNTAIN) {
+						for(int i = 0; i < endSortedResults.size(); i++) {
+							if(i < 15) {
+								endSortedResults.get(i).addPoints(mediumMountainPoints[i]);
+							} else {
+								endSortedResults.get(i).addPoints(0);
+							}
+						}
+					}
+					if(stage.getType() == StageType.HIGH_MOUNTAIN) {
+						for(int i = 0; i < endSortedResults.size(); i++) {
+							if(i < 15) {
+								endSortedResults.get(i).addPoints(highMountainPoints[i]);
+							} else {
+								endSortedResults.get(i).addPoints(0);
+							}
+						}
+					}
+					if(stage.getType() == StageType.TT) {
+						for(int i = 0; i < endSortedResults.size(); i++) {
+							if(i < 15) {
+								endSortedResults.get(i).addPoints(ttPoints[i]);
+							} else {
+								endSortedResults.get(i).addPoints(0);
+							}
+						}
+					}
+
+					//Working out sprint position points
+
+					//find where the intSprints are
+					//Find the position where the sprints are
+					ArrayList<Segment> segmentsInStage = stage.getStageSegments();
+					ArrayList<Integer> sprintIndexes = new ArrayList<Integer>();
+					for(int i = 0; i < segmentsInStage.size(); i++) {
+						if(segmentsInStage.get(i).getType() == SegmentType.SPRINT) {
+							//i+1 to ignore the startTime in the checkpoints list
+							sprintIndexes.add(i+1);
+						}
+					}
+
+					for(int j = 0; j < sprintIndexes.size(); j++) {
+						Comparator<Result> checkpointsComparator = new ResultCheckpointsComparator(sprintIndexes.get(j));
+						ArrayList<Result> sorted = new ArrayList<>(resultsInStage);
+						sorted.sort(checkpointsComparator);
+
+						for(int x = 0; x < sorted.size(); x++) {
+							if(x < 15) {
+								sorted.get(x).addPoints(intSprintPoints[x]);
+							} else {
+								sorted.get(x).addPoints(0);
+							}
+						}
+					}
+
+					//adding points into returnArr
+					returnArr = new int[endSortedResults.size()];
+					for(int z = 0; z < endSortedResults.size(); z++) {
+						returnArr[z] = endSortedResults.get(z).getPoints();
+					}
+
+					return returnArr;
+				}
+			}
+		}
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
