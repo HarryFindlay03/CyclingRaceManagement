@@ -14,6 +14,8 @@ public class Stage {
     private double length;
     private LocalDateTime startTime;
     private StageType type;
+
+    private int raceId;
     private int stageId;
 
     //stageState: false -> nothing, true -> 'waiting for results'
@@ -23,7 +25,8 @@ public class Stage {
 
     private ArrayList<Segment> segments = new ArrayList<Segment>();
 
-    public Stage(String stageName, String description, double length, LocalDateTime startTime, StageType type) {
+    public Stage(int raceId, String stageName, String description, double length, LocalDateTime startTime, StageType type) {
+        this.raceId = raceId;
         this.stageName = stageName;
         this.description = description;
         this.length = length;
@@ -38,6 +41,10 @@ public class Stage {
             stageId = stageIds.get(stageIds.size() - 1) + 1;
             stageIds.add(stageId);
         }
+    }
+
+    public int getRaceId() {
+        return raceId;
     }
 
     public int getStageId() {

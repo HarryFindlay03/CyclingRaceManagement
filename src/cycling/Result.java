@@ -1,11 +1,16 @@
 package cycling;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Result keeps track of results within a certain stage
+ */
 public class Result {
+    private int raceId;
     private int stageId;
     private int riderId;
     private int resultId;
@@ -16,9 +21,9 @@ public class Result {
     private static ArrayList<Integer> resultIds = new ArrayList<Integer>();
 
     private ArrayList<LocalTime> checkpoints = new ArrayList<LocalTime>();
-    private static ArrayList<Result> CyclingPortalResults = new ArrayList<Result>();
 
-    public Result(int stageId, int riderId, LocalTime... checkpoints) {
+    public Result(int raceId, int stageId, int riderId, LocalTime... checkpoints) {
+        this.raceId = raceId;
         this.stageId = stageId;
         this.riderId = riderId;
 
@@ -34,14 +39,9 @@ public class Result {
             resultIds.add(resultId);
         }
     }
-    public static void addResult(Result result ) {
-        CyclingPortalResults.add(result);
-    }
-    public static void removeResult(Result result) {
-        CyclingPortalResults.remove(result);
-    }
-    public static ArrayList<Result> getCyclingPortalResults() {
-        return CyclingPortalResults;
+
+    public int getRaceId() {
+        return raceId;
     }
 
     public int getResultId() {
@@ -75,6 +75,14 @@ public class Result {
 
     public void addPoints(int points) {
         this.points += points;
+    }
+
+    public int getMountainPoints() {
+        return mountainPoints;
+    }
+
+    public void addMountainPoints(int mountainPoints) {
+        this.mountainPoints += mountainPoints;
     }
 
     /**
