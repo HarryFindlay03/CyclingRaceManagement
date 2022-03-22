@@ -9,10 +9,13 @@ public class RaceResultMountainPointsComparator implements Comparator<RaceResult
 
         if(r1.getTotalMountainPoints() > r2.getTotalMountainPoints()) {
             result = 1;
-        } else {
+        } else if (r1.getTotalMountainPoints() == r2.getTotalMountainPoints()) {
             result = 0;
+        } else {
+            result = -1;
         }
 
-        return result;
+        //biggest to smallest
+        return -1 * result;
     }
 }

@@ -9,10 +9,13 @@ public class RaceResultPointsComparator implements Comparator<RaceResult> {
 
         if(r1.getTotalPoints() > r2.getTotalPoints()) {
             result = 1;
-        } else {
+        } else if(r1.getTotalPoints() == r2.getTotalPoints()) {
             result = 0;
+        } else {
+            result = -1;
         }
 
-        return result;
+        //biggest to smallest
+        return -1 * result;
     }
 }
