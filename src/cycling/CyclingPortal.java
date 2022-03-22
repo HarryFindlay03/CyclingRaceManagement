@@ -12,6 +12,9 @@ import java.util.Comparator;
 //when deleting a rider delete all of the results that are associated with it
 //sorting segments into location order within a stage
 //serializable
+//working with nanoseconds
+//adjusted elapsed time
+//points is looping through too many times and getting the points too many times somewhere
 
 
 /**
@@ -927,14 +930,100 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getRidersPointsInRace(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		int[] returnArr;
+
+		//For every rider create a new RaceResult object
+		ArrayList<RaceResult> raceResults = new ArrayList<RaceResult>();
+		for(Team team : CyclingPortalTeams) {
+			for(Rider rider : team.getRiders()) {
+				raceResults.add(new RaceResult(raceId, rider.getRiderId()));
+			}
+		}
+
+		for(Race race : CyclingPortalRaces) {
+			if(race.getRaceId() == raceId) {
+				for(Stage stage : race.getStages()) {
+					//ridersRankInStage
+					int[] ridersRankInStage = getRidersRankInStage(stage.getStageId());
+					int[] ridersPointsInStage = getRidersPointsInStage(stage.getStageId());
+
+					for(int i = 0; i < ridersRankInStage.length; i++) {
+						for(RaceResult raceResult : raceResults) {
+							if(raceResult.getRiderId() == ridersRankInStage[i]) {
+								raceResult.addToTotalPoints(ridersPointsInStage[i]);
+							}
+						}
+					}
+
+				}
+
+				//sort the raceResults and get the riderIds linked with them
+				ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
+				Comparator<RaceResult> comparator = new RaceResultPointsComparator();
+				sorted.sort(comparator);
+
+				//adding points into returnArr
+				returnArr = new int[sorted.size()];
+				for(int z = 0; z < sorted.size(); z++) {
+					returnArr[z] = sorted.get(z).getTotalPoints();
+				}
+
+				return returnArr;
+			}
+		}
+
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
 	public int[] getRidersMountainPointsInRace(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		int[] returnArr;
+
+		ArrayList<RaceResult> raceResults = new ArrayList<RaceResult>();
+		for(Team team : CyclingPortalTeams) {
+			for(Rider rider : team.getRiders()) {
+				raceResults.add(new RaceResult(raceId, rider.getRiderId()));
+			}
+		}
+
+		for(Race race : CyclingPortalRaces) {
+			if(race.getRaceId() == raceId) {
+				for(Stage stage : race.getStages()) {
+					//ridersRankInStage
+					int[] ridersRankInStage = getRidersRankInStage(stage.getStageId());
+					int[] ridersMountainPointsInStage = getRidersMountainPointsInStage(stage.getStageId());
+
+					System.out.println("riders moutain points in stage");
+					for(Integer elem : ridersMountainPointsInStage) {
+						System.out.println(elem);
+					}
+
+					for(int i = 0; i < ridersRankInStage.length; i++) {
+						for(RaceResult raceResult : raceResults) {
+							if(raceResult.getRiderId() == ridersRankInStage[i]) {
+								raceResult.addToTotalMountainPoints(ridersMountainPointsInStage[i]);
+							}
+						}
+					}
+
+				}
+
+				//sort the raceResults and get the riderIds linked with them
+				ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
+				Comparator<RaceResult> comparator = new RaceResultMountainPointsComparator();
+				sorted.sort(comparator);
+
+				//adding points into returnArr
+				returnArr = new int[sorted.size()];
+				for(int z = 0; z < sorted.size(); z++) {
+					returnArr[z] = sorted.get(z).getTotalMountainPoints();
+				}
+
+				return returnArr;
+			}
+		}
+
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override

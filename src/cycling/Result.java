@@ -95,6 +95,7 @@ public class Result {
         int hours = (int) ChronoUnit.HOURS.between(startTime, finishTime);
         int minutes = (int) ChronoUnit.MINUTES.between(startTime, finishTime) % 60;
         int seconds = (int) ChronoUnit.SECONDS.between(startTime, finishTime) % 60;
+        //int nanoSeconds = (int) ChronoUnit.NANOS.between(startTime, finishTime) % 1000000000;
         return LocalTime.of(hours, minutes, seconds);
     }
 
