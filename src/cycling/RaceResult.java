@@ -26,15 +26,6 @@ public class RaceResult {
         this.riderId = riderId;
     }
 
-    //STATIC METHODS
-    public static ArrayList<RaceResult> getCyclingPortalRaceResults() {
-        return CyclingPortalRaceResults;
-    }
-
-    public static void addRaceResult(RaceResult raceResult) {
-        CyclingPortalRaceResults.add(raceResult);
-    }
-
     //INSTANCE METHODS
     public int getRaceId() {
         return raceId;

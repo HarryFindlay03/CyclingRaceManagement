@@ -1,6 +1,7 @@
 package cycling;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 	private ArrayList<Race> CyclingPortalRaces = new ArrayList<Race>();
 	private ArrayList<Team> CyclingPortalTeams = new ArrayList<Team>();
 	private ArrayList<Result> CyclingPortalResults = new ArrayList<Result>();
+	//private ArrayList<RaceResult> CyclingPortalRaceResults = new ArrayList<RaceResult>();
 
 	//CONSTANT POINTS ARRAYS
 	private final int[] flatPoints = new int[]{50, 30, 20, 18, 16, 14, 12, 10, 8, 7, 6, 5, 4, 3, 2};
@@ -863,8 +865,58 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public LocalTime[] getGeneralClassificationTimesInRace(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		//TODO: USING ADJUSTED ELAPSED TIME
+		boolean isFound = false;
+
+		LocalTime[] returnArr;
+
+		//Local RaceResult list that we will query to add to returnArr
+		ArrayList<RaceResult> raceResults = new ArrayList<RaceResult>();
+
+		//Cache a list of riders so that a nested for loop is not needed
+		//Finding all the riders in the race
+		ArrayList<Rider> riders = new ArrayList<Rider>();
+		for(Team team : CyclingPortalTeams) {
+			for(Rider rider : team.getRiders()) {
+				riders.add(rider);
+				RaceResult newRaceResult = new RaceResult(raceId, rider.getRiderId());
+				raceResults.add(newRaceResult);
+			}
+		}
+
+		for(Rider rider : riders) {
+			for(Result result : CyclingPortalResults) {
+				if(result.getRaceId() == raceId && result.getRiderId() == rider.getRiderId()) {
+					isFound = true;
+					for(RaceResult raceResult : raceResults) {
+						if(raceResult.getRiderId() == rider.getRiderId() && raceResult.getRaceId() == raceId) {
+							//Convert localtime to elapsed time
+							raceResult.addToElapsedTime(Duration.between(result.getCheckpoints().get(0), result.getFinishTime()));
+						}
+					}
+				}
+			}
+		}
+
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
+
+		ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
+		Comparator<RaceResult> comparator = new RaceResultComparator();
+		sorted.sort(comparator);
+
+		//adding points into returnArr
+		returnArr = new LocalTime[raceResults.size()];
+		for(int z = 0; z < raceResults.size(); z++) {
+			Duration d = sorted.get(z).getTotalElapsedTime();
+			int hours = d.toHoursPart();
+			int minutes = d.toMinutesPart();
+			int seconds = d.toSecondsPart();
+			returnArr[z] = LocalTime.of(hours, minutes, seconds);
+		}
+
+		return returnArr;
 	}
 
 	@Override
@@ -881,55 +933,156 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getRidersGeneralClassificationRank(int raceId) throws IDNotRecognisedException {
-		//TODO: get working
+		//TODO: USING ADJUSTED ELAPSED TIME
+		boolean isFound = false;
+
 		int[] returnArr;
+
+		//Local RaceResult list that we will query to add to returnArr
+		ArrayList<RaceResult> raceResults = new ArrayList<RaceResult>();
+
 		//Cache a list of riders so that a nested for loop is not needed
+		//Finding all the riders in the race
 		ArrayList<Rider> riders = new ArrayList<Rider>();
-		//foreach rider in the race create a new RaceResult Object for them
 		for(Team team : CyclingPortalTeams) {
 			for(Rider rider : team.getRiders()) {
 				riders.add(rider);
-				RaceResult raceResult = new RaceResult(raceId, rider.getRiderId());
-				RaceResult.addRaceResult(raceResult);
+				RaceResult newRaceResult = new RaceResult(raceId, rider.getRiderId());
+				raceResults.add(newRaceResult);
 			}
 		}
 
-		//for each stage in a race and for each rider add to totalElapsedTime
-		//This will require converting
 		for(Rider rider : riders) {
-			RaceResult riderRaceResult = null;
-			for(RaceResult raceResult : RaceResult.getCyclingPortalRaceResults()) {
-				if(raceResult.getRaceId() == raceId && raceResult.getRiderId() == rider.getRiderId()) {
-					//this should not be a copy
-					//changing riderRaceResult elsewhere should also change raceResult
-					riderRaceResult = raceResult;
-				}
-			}
-			if(riderRaceResult == null) {
-				throw new IDNotRecognisedException("ID not recognised in the system!");
-			}
-
 			for(Result result : CyclingPortalResults) {
 				if(result.getRaceId() == raceId && result.getRiderId() == rider.getRiderId()) {
-					//TODO: convert the LocalTime to a duration.
-					//Doesn't matter what order elapsedTimes are added up
-					//riderRaceResult.addToElapsedTime(Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime()));
+					isFound = true;
+					for(RaceResult raceResult : raceResults) {
+						if(raceResult.getRiderId() == rider.getRiderId() && raceResult.getRaceId() == raceId) {
+							//Convert localtime to elapsed time
+							raceResult.addToElapsedTime(Duration.between(result.getCheckpoints().get(0), result.getFinishTime()));
+						}
+					}
 				}
 			}
- 		}
-		return null;
+		}
+
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
+
+		ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
+		Comparator<RaceResult> comparator = new RaceResultComparator();
+		sorted.sort(comparator);
+
+		//adding points into returnArr
+		returnArr = new int[raceResults.size()];
+		for(int z = 0; z < raceResults.size(); z++) {
+			returnArr[z] = sorted.get(z).getRiderId();
+		}
+
+		return returnArr;
 	}
 
 	@Override
 	public int[] getRidersPointClassificationRank(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		boolean isFound = false;
+
+		int[] returnArr;
+
+		//Local RaceResult list that we will query to add to returnArr
+		ArrayList<RaceResult> raceResults = new ArrayList<RaceResult>();
+
+		//Cache a list of riders so that a nested for loop is not needed
+		//Finding all the riders in the race
+		ArrayList<Rider> riders = new ArrayList<Rider>();
+		for(Team team : CyclingPortalTeams) {
+			for(Rider rider : team.getRiders()) {
+				riders.add(rider);
+				RaceResult newRaceResult = new RaceResult(raceId, rider.getRiderId());
+				raceResults.add(newRaceResult);
+			}
+		}
+
+		for(Rider rider : riders) {
+			for(Result result : CyclingPortalResults) {
+				if(result.getRaceId() == raceId && result.getRiderId() == rider.getRiderId()) {
+					isFound = true;
+					for(RaceResult raceResult : raceResults) {
+						if(raceResult.getRiderId() == rider.getRiderId() && raceResult.getRaceId() == raceId) {
+							//add to points
+							raceResult.addToTotalPoints(result.getPoints());
+						}
+					}
+				}
+			}
+		}
+
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
+
+		ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
+		Comparator<RaceResult> comparator = new RaceResultPointsComparator();
+		sorted.sort(comparator);
+
+		//adding points into returnArr
+		returnArr = new int[raceResults.size()];
+		for(int z = 0; z < raceResults.size(); z++) {
+			returnArr[z] = sorted.get(z).getRiderId();
+		}
+
+		return returnArr;
 	}
 
 	@Override
 	public int[] getRidersMountainPointClassificationRank(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		return null;
+		boolean isFound = false;
+
+		int[] returnArr;
+
+		//Local RaceResult list that we will query to add to returnArr
+		ArrayList<RaceResult> raceResults = new ArrayList<RaceResult>();
+
+		//Cache a list of riders so that a nested for loop is not needed
+		//Finding all the riders in the race
+		ArrayList<Rider> riders = new ArrayList<Rider>();
+		for(Team team : CyclingPortalTeams) {
+			for(Rider rider : team.getRiders()) {
+				riders.add(rider);
+				RaceResult newRaceResult = new RaceResult(raceId, rider.getRiderId());
+				raceResults.add(newRaceResult);
+			}
+		}
+
+		for(Rider rider : riders) {
+			for(Result result : CyclingPortalResults) {
+				if(result.getRaceId() == raceId && result.getRiderId() == rider.getRiderId()) {
+					isFound = true;
+					for(RaceResult raceResult : raceResults) {
+						if(raceResult.getRiderId() == rider.getRiderId() && raceResult.getRaceId() == raceId) {
+							//add to points
+							raceResult.addToTotalPoints(result.getPoints());
+						}
+					}
+				}
+			}
+		}
+
+		if(!isFound) {
+			throw new IDNotRecognisedException("ID not recognised in the system!");
+		}
+
+		ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
+		Comparator<RaceResult> comparator = new RaceResultMountainPointsComparator();
+		sorted.sort(comparator);
+
+		//adding points into returnArr
+		returnArr = new int[raceResults.size()];
+		for(int z = 0; z < raceResults.size(); z++) {
+			returnArr[z] = sorted.get(z).getRiderId();
+		}
+
+		return returnArr;
 	}
 
 }
