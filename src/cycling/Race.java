@@ -14,8 +14,6 @@ public class Race {
     private int Id;
     private static ArrayList<Integer> raceIds = new ArrayList<Integer>();
 
-    private static ArrayList<Race> CyclingPortalRaces = new ArrayList<Race>();
-
     private ArrayList<Stage> stages = new ArrayList<Stage>();
 
     public Race(String name, String description) {
@@ -30,28 +28,6 @@ public class Race {
             Id = tempRaceId + 1;
             raceIds.add(Id);
         }
-    }
-
-    public static ArrayList<Race> getCyclingPortalRaces() {
-        return CyclingPortalRaces;
-    }
-
-    public static void addRace(Race race) {
-        CyclingPortalRaces.add(race);
-    }
-
-    public static void removeRace(Race race) {
-        CyclingPortalRaces.remove(race);
-        System.out.println(CyclingPortalRaces);
-        //        ArrayList<Race> toRemove = new ArrayList<Race>();
-//
-//        for(Race r : CyclingPortalRaces) {
-//            if(r.getRaceId() == race.getRaceId()) {
-//                toRemove.add(r);
-//            }
-//        }
-//
-//        CyclingPortalRaces.removeAll(toRemove);
     }
 
     @Override

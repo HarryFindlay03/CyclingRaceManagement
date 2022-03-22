@@ -20,6 +20,11 @@ import java.util.Comparator;
  *
  */
 public class CyclingPortal implements CyclingPortalInterface {
+	//RACE, TEAM & RESULTS LIST
+	private ArrayList<Race> CyclingPortalRaces = new ArrayList<Race>();
+	private ArrayList<Team> CyclingPortalTeams = new ArrayList<Team>();
+	private ArrayList<Result> CyclingPortalResults = new ArrayList<Result>();
+
 	//CONSTANT POINTS ARRAYS
 	private final int[] flatPoints = new int[]{50, 30, 20, 18, 16, 14, 12, 10, 8, 7, 6, 5, 4, 3, 2};
 	private final int[] mediumMountainPoints = new int[]{30, 25, 22, 19, 17, 15, 13, 11, 9, 7, 6, 5, 4, 3, 2};
@@ -30,16 +35,16 @@ public class CyclingPortal implements CyclingPortalInterface {
 	//INTERFACE METHODS
 	@Override
 	public int[] getRaceIds() {
-		int[] tempArray = new int[Race.getCyclingPortalRaces().size()];
+		int[] tempArray = new int[CyclingPortalRaces.size()];
 		for(int i = 0; i < tempArray.length; i++ ) {
-			tempArray[i] = Race.getCyclingPortalRaces().get(i).getRaceId();
+			tempArray[i] = CyclingPortalRaces.get(i).getRaceId();
 		}
 		return tempArray;
 	}
 
 	@Override
 	public int createRace(String name, String description) throws IllegalNameException, InvalidNameException {
-		for(Race race: Race.getCyclingPortalRaces()) {
+		for(Race race: CyclingPortalRaces) {
 			if(race.getName() == name) {
 				throw new IllegalNameException("Name already in the system!");
 			}
@@ -55,14 +60,14 @@ public class CyclingPortal implements CyclingPortalInterface {
 		//TODO check number of characters is not greater than system length
 
 		Race newRace = new Race(name, description);
-		Race.addRace(newRace);
+		CyclingPortalRaces.add(newRace);
 		return newRace.getId();
 	}
 
 	@Override
 	public String viewRaceDetails(int raceId) throws IDNotRecognisedException {
 
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			if(race.getRaceId() == raceId) {
 				return race.toString();
 			}
@@ -73,9 +78,9 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public void removeRaceById(int raceId) throws IDNotRecognisedException {
 		boolean removed = false;
-		for (Race race : Race.getCyclingPortalRaces()) {
+		for (Race race : CyclingPortalRaces) {
 			if (race.getRaceId() == raceId) {
-				Race.removeRace(race);
+				CyclingPortalRaces.remove(race);
 				removed = true;
 				//once removed break out of loop
 				break;
@@ -88,8 +93,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int getNumberOfStages(int raceId) throws IDNotRecognisedException {
-		// TODO Auto-generated method stub
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			if(race.getRaceId() == raceId) {
 				return race.getNumOfStages();
 			}
@@ -116,7 +120,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 		}
 
 		//IllegalNameException
-		for (Race race : Race.getCyclingPortalRaces()) {
+		for (Race race : CyclingPortalRaces) {
 			if(race.getRaceId() == raceId) {
 				for(Stage stage: race.getStages()) {
 					if(stage.getStageName() == stageName) {
@@ -134,7 +138,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public int[] getRaceStages(int raceId) throws IDNotRecognisedException {
 		int[] raceStages;
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			if(race.getRaceId() == raceId) {
 				raceStages = new int[race.getNumOfStages()];
 				for(int i = 0; i < raceStages.length; i++) {
@@ -151,7 +155,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public double getStageLength(int stageId) throws IDNotRecognisedException {
 		//check through each race in the system and then check each stage in the race for the id given
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				if(stage.getStageId() == stageId) {
 					return stage.getLength();
@@ -166,7 +170,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 		//check isFound needed as no return
 		boolean isFound = false;
 
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				if(stage.getStageId() == stageId) {
 					isFound = true;
@@ -186,7 +190,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 			Double length) throws IDNotRecognisedException, InvalidLocationException, InvalidStageStateException,
 			InvalidStageTypeException {
 
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				if(stage.getStageId() == stageId) {
 					//stageId is found -> Other checks can be done
@@ -222,7 +226,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public int addIntermediateSprintToStage(int stageId, double location) throws IDNotRecognisedException,
 			InvalidLocationException, InvalidStageStateException, InvalidStageTypeException {
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				if(stage.getStageId() == stageId) {
 					//stageId is found -> Other checks can be done
@@ -257,7 +261,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 		//TODO: Stage states
 
 		boolean isFound = false;
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				for(Segment segment : stage.getStageSegments()) {
 					if(segment.getSegmentId() == segmentId) {
@@ -283,7 +287,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 		// TODO Check this function works
 		boolean isFound = false;
 
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				if(stage.getStageId() == stageId) {
 					if(stage.getStageState()) {
@@ -307,7 +311,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public int[] getStageSegments(int stageId) throws IDNotRecognisedException {
 		int[] stageSegments;
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				if(stage.getStageId() == stageId) {
 					stageSegments = new int[stage.getStageSegments().size()];
@@ -333,7 +337,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 	public int createTeam(String name, String description) throws IllegalNameException, InvalidNameException {
 
 		//IllegalNameException
-		for(Team team : Team.getCyclingPortalTeams()) {
+		for(Team team : CyclingPortalTeams) {
 			if(team.getName() == name) {
 				throw new IllegalNameException("Name already in the system!");
 			}
@@ -362,7 +366,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 		// Returns the teamID of the new team
 
 		Team newTeam = new Team(name, description);
-		Team.addTeam(newTeam);
+		CyclingPortalTeams.add(newTeam);
 		return newTeam.getTeamId();
 	}
 
@@ -371,9 +375,9 @@ public class CyclingPortal implements CyclingPortalInterface {
 		//Loop through all of the teams held in the system
 		//Remove the team that it matched with the id
 		boolean teamFound = false;
-		for(Team team : Team.getCyclingPortalTeams()) {
+		for(Team team : CyclingPortalTeams) {
 			if(team.getTeamId() == teamId) {
-				Team.removeTeam(team);
+				CyclingPortalTeams.remove(team);
 				teamFound = true;
 				break;
 			}
@@ -387,10 +391,10 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getTeams() {
-		int[] CyclingPortalTeamsArray = new int[Team.getCyclingPortalTeams().size()];
+		int[] CyclingPortalTeamsArray = new int[CyclingPortalTeams.size()];
 
-		for(int i = 0; i < Team.getCyclingPortalTeams().size(); i++) {
-			CyclingPortalTeamsArray[i] = Team.getCyclingPortalTeams().get(i).getTeamId();
+		for(int i = 0; i < CyclingPortalTeams.size(); i++) {
+			CyclingPortalTeamsArray[i] = CyclingPortalTeams.get(i).getTeamId();
 		}
 
 		return CyclingPortalTeamsArray;
@@ -400,7 +404,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 	public int[] getTeamRiders(int teamId) throws IDNotRecognisedException {
 		int[] teamRidersIds;
 
-		for(Team team : Team.getCyclingPortalTeams()) {
+		for(Team team : CyclingPortalTeams) {
 			if(team.getTeamId() == teamId) {
 				teamRidersIds = new int[team.getRiders().size()];
 				for(int i = 0; i < team.getRiders().size(); i++) {
@@ -430,7 +434,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 		//Loops through all the teams until the teamId is found that
 		//has been inputted for the rider, then it calls the addRider method
 		//for that specific team.
-		for(Team team : Team.getCyclingPortalTeams()) {
+		for(Team team : CyclingPortalTeams) {
 			if(team.getTeamId() == teamID) {
 				Rider newRider = new Rider(teamID, name, yearOfBirth);
 				team.addRider(newRider);
@@ -444,7 +448,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public void removeRider(int riderId) throws IDNotRecognisedException {
 		boolean isFound = false;
-		for(Team team : Team.getCyclingPortalTeams()) {
+		for(Team team : CyclingPortalTeams) {
 			for(Rider rider : team.getRiders()) {
 				if(rider.getRiderId() == riderId) {
 					team.removeRider(rider);
@@ -468,25 +472,25 @@ public class CyclingPortal implements CyclingPortalInterface {
 			boolean isFoundStage = false;
 			boolean isFoundRider = false;
 
-			for(Race race: Race.getCyclingPortalRaces()){
+			for(Race race: CyclingPortalRaces){
 				for(Stage stage: race.getStages()){
 					if(stage.getStageId()==stageId){
 						isFoundStage= true;
 						if(!stage.getStageState()) {
 							throw new InvalidStageStateException("Stage under development!");
 						}
-						for(Team team: Team.getCyclingPortalTeams()){
+						for(Team team: CyclingPortalTeams){
 							for(Rider rider: team.getRiders()){
 								if(rider.getRiderId()==riderId){
 									isFoundRider = true;
 									//both ids found
-									for(Result result : Result.getCyclingPortalResults()) {
+									for(Result result : CyclingPortalResults) {
 										if(result.getRiderId() == riderId && result.getStageId() == stageId) {
 											throw new DuplicatedResultException("Result already in system for rider!");
 										}
 									}
 									Result result = new Result(stage.getRaceId(), stageId, riderId, checkpoints);
-									Result.addResult(result);
+									CyclingPortalResults.add(result);
 								}
 
 							}
@@ -508,7 +512,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public LocalTime[] getRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
 		LocalTime[] resultArray;
-		for(Result result : Result.getCyclingPortalResults()) {
+		for(Result result : CyclingPortalResults) {
 			if (result.getRiderId() == riderId && result.getStageId() == stageId) {
 				//+1 to make space for elapsed time
 				resultArray = new LocalTime[result.getCheckpoints().size()+1];
@@ -529,17 +533,17 @@ public class CyclingPortal implements CyclingPortalInterface {
 		//TODO -> do we need to work with nanoseconds?
 		//Checking the stage type, if stagetype is TT then do not adjust the time
 		StageType type = null;
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				type = stage.getType();
 			}
 		}
 
 		//Finding result linked to riderId
-		for(Result result : Result.getCyclingPortalResults()) {
+		for(Result result : CyclingPortalResults) {
 			if(result.getRiderId() == riderId && result.getStageId() == stageId) {
 				//Find the stage and then get all the results for the riders in the stage and compare their finishing times
-				for(Result allResult : Result.getCyclingPortalResults()) {
+				for(Result allResult : CyclingPortalResults) {
 					if(allResult.getStageId() == stageId && allResult.getRiderId() != riderId) {
 						if(type == null) {
 							throw new IDNotRecognisedException("ID not recognised in the system!");
@@ -570,10 +574,10 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public void deleteRiderResultsInStage(int stageId, int riderId) throws IDNotRecognisedException {
 		boolean isFound = false;
-		for(Result result : Result.getCyclingPortalResults()) {
+		for(Result result : CyclingPortalResults) {
 			if(result.getRiderId() == riderId && result.getStageId() == stageId) {
 				isFound = true;
-				Result.removeResult(result);
+				CyclingPortalResults.remove(result);
 				break;
 			}
 		}
@@ -589,7 +593,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 		ArrayList<Result> resultsInStage = new ArrayList<Result>();
 		boolean isFound = false;
 		//get all the results in a stage linked with the stageId
-		for(Result result : Result.getCyclingPortalResults()) {
+		for(Result result : CyclingPortalResults) {
 			if(result.getStageId() == stageId) {
 				isFound = true;
 				resultsInStage.add(result);
@@ -625,12 +629,12 @@ public class CyclingPortal implements CyclingPortalInterface {
 	public int[] getRidersPointsInStage(int stageId) throws IDNotRecognisedException {
 		int[] returnArr;
 
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				if(stage.getStageId() == stageId) {
 					//Get the orderedList of results in the stage (like getRidersRankInStage but we want the result objects)
 					ArrayList<Result> resultsInStage = new ArrayList<Result>();
-					for(Result result : Result.getCyclingPortalResults()) {
+					for(Result result : CyclingPortalResults) {
 						if(result.getStageId() == stageId) {
 							resultsInStage.add(result);
 						}
@@ -729,11 +733,11 @@ public class CyclingPortal implements CyclingPortalInterface {
 		int[] c1Points = new int[]{10, 8, 6, 4, 2, 1};
 		int[] hcPoints = new int[]{20, 15, 12, 10, 8, 6, 4, 2};
 
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				//Get the orderedList of results in the stage (like getRidersRankInStage but we want the result objects)
 				ArrayList<Result> resultsInStage = new ArrayList<Result>();
-				for(Result result : Result.getCyclingPortalResults()) {
+				for(Result result : CyclingPortalResults) {
 					if(result.getStageId() == stageId) {
 						resultsInStage.add(result);
 					}
@@ -843,10 +847,11 @@ public class CyclingPortal implements CyclingPortalInterface {
 	public void removeRaceByName(String name) throws NameNotRecognisedException {
 		boolean isFound = false;
 
-		for(Race race : Race.getCyclingPortalRaces()) {
+		for(Race race : CyclingPortalRaces) {
 			if(race.getName() == name) {
 				isFound = true;
-				Race.getCyclingPortalRaces().remove(race);
+				CyclingPortalRaces.remove(race);
+				break;
 			}
 		}
 
@@ -881,7 +886,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 		//Cache a list of riders so that a nested for loop is not needed
 		ArrayList<Rider> riders = new ArrayList<Rider>();
 		//foreach rider in the race create a new RaceResult Object for them
-		for(Team team : Team.getCyclingPortalTeams()) {
+		for(Team team : CyclingPortalTeams) {
 			for(Rider rider : team.getRiders()) {
 				riders.add(rider);
 				RaceResult raceResult = new RaceResult(raceId, rider.getRiderId());
@@ -904,11 +909,11 @@ public class CyclingPortal implements CyclingPortalInterface {
 				throw new IDNotRecognisedException("ID not recognised in the system!");
 			}
 
-			for(Result result : Result.getCyclingPortalResults()) {
+			for(Result result : CyclingPortalResults) {
 				if(result.getRaceId() == raceId && result.getRiderId() == rider.getRiderId()) {
 					//TODO: convert the LocalTime to a duration.
 					//Doesn't matter what order elapsedTimes are added up
-					riderRaceResult.addToElapsedTime(Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime()));
+					//riderRaceResult.addToElapsedTime(Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime()));
 				}
 			}
  		}

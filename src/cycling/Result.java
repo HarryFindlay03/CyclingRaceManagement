@@ -21,7 +21,6 @@ public class Result {
     private static ArrayList<Integer> resultIds = new ArrayList<Integer>();
 
     private ArrayList<LocalTime> checkpoints = new ArrayList<LocalTime>();
-    private static ArrayList<Result> CyclingPortalResults = new ArrayList<Result>();
 
     public Result(int raceId, int stageId, int riderId, LocalTime... checkpoints) {
         this.raceId = raceId;
@@ -39,15 +38,6 @@ public class Result {
             resultId = resultIds.get(resultIds.size() - 1) + 1;
             resultIds.add(resultId);
         }
-    }
-    public static void addResult(Result result ) {
-        CyclingPortalResults.add(result);
-    }
-    public static void removeResult(Result result) {
-        CyclingPortalResults.remove(result);
-    }
-    public static ArrayList<Result> getCyclingPortalResults() {
-        return CyclingPortalResults;
     }
 
     public int getRaceId() {
