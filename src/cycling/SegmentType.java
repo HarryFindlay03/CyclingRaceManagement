@@ -1,5 +1,8 @@
 package cycling;
-
+/**
+ * SegmentType enum class that holds all of the types of segments
+ *  @author Harry Findlay, Vihan Sharma
+ */
 public enum SegmentType {
     /**
      * Sprint segment type

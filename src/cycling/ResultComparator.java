@@ -3,6 +3,9 @@ package cycling;
 import java.time.LocalTime;
 import java.util.Comparator;
 
+/**
+ * Sort results based off of their total elapsed time
+ */
 public class ResultComparator implements Comparator<Result> {
     @Override
     public int compare(Result r1, Result r2) {

@@ -45,7 +45,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 	public int createRace(String name, String description) throws IllegalNameException, InvalidNameException {
 
 		for(Race race: CyclingPortalRaces) {
-			System.out.println(race.getName());
 			if(race.getName().equals(name)) {
 				throw new IllegalNameException("Name already in the system!");
 			}
@@ -922,8 +921,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 			out.close();
 			file.close();
 
-			System.out.println("Object has been serialized");
-
 		}
 		catch (IOException e) {
 			throw new IOException("IO exception found");
@@ -947,8 +944,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 			in.close();
 			file.close();
-
-			System.out.println("Object has been deserialized ");
 		}
 		catch(IOException ex)
 		{
@@ -1059,7 +1054,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 				//sort the raceResults and get the riderIds linked with them
 				ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
-				Comparator<RaceResult> comparator = new RaceResultPointsComparator();
+				Comparator<RaceResult> comparator = new AdjustedRaceResultComparator();
 				sorted.sort(comparator);
 
 				//adding points into returnArr
@@ -1105,7 +1100,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 				//sort the raceResults and get the riderIds linked with them
 				ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
-				Comparator<RaceResult> comparator = new RaceResultMountainPointsComparator();
+				Comparator<RaceResult> comparator = new AdjustedRaceResultComparator();
 				sorted.sort(comparator);
 
 				//adding points into returnArr

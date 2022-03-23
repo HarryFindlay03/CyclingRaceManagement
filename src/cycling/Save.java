@@ -1,7 +1,10 @@
 package cycling;
 
 import java.util.ArrayList;
-
+/**
+ * Save class that holds all of the information about a rider
+ *  @author Harry Findlay, Vihan Sharma
+ */
 public class Save implements java.io.Serializable{
     private ArrayList<Race> CyclingPortalRaces = new ArrayList<Race>();
     private ArrayList<Team> CyclingPortalTeams = new ArrayList<Team>();

@@ -8,6 +8,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Stage class that holds all of the information about a stage
+ *  @author Harry Findlay, Vihan Sharma
+ */
 public class Stage implements java.io.Serializable {
     private String stageName;
     private String description;

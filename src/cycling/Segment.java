@@ -2,6 +2,11 @@ package cycling;
 
 import java.util.ArrayList;
 
+/**
+ * Segment class that holds all of the information about a segment
+ *  @author Harry Findlay, Vihan Sharma
+ */
+
 public class Segment implements java.io.Serializable {
     private int segmentId;
     protected SegmentType type;

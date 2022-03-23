@@ -2,6 +2,9 @@ package cycling;
 
 import java.util.Comparator;
 
+/**
+ * Sort results based off of a position in the checkpoints array
+ */
 public class ResultCheckpointsComparator implements Comparator<Result> {
     int pos;
     public ResultCheckpointsComparator(int pos) {

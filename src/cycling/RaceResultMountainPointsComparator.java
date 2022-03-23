@@ -2,6 +2,9 @@ package cycling;
 
 import java.util.Comparator;
 
+/**
+ * Comparator to sort RaceResult objects by their mountain points
+ */
 public class RaceResultMountainPointsComparator implements Comparator<RaceResult> {
     @Override
     public int compare(RaceResult r1, RaceResult r2) {

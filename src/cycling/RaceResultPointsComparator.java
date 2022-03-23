@@ -2,6 +2,9 @@ package cycling;
 
 import java.util.Comparator;
 
+/**
+ * Comparator to sort RaceResults by their sprint points
+ */
 public class RaceResultPointsComparator implements Comparator<RaceResult> {
     @Override
     public int compare(RaceResult r1, RaceResult r2) {

@@ -1,7 +1,10 @@
 package cycling;
 
 import java.util.ArrayList;
-
+/**
+ * Team class that holds all of the information about a team
+ *  @author Harry Findlay, Vihan Sharma
+ */
 public class Team implements java.io.Serializable {
     private String name;
     private String description;

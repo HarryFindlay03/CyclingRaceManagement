@@ -8,6 +8,7 @@ import java.util.Collections;
 
 /**
  * Result keeps track of results within a certain stage
+ * @author Harry Findlay, Vihan Sharma
  */
 public class Result implements java.io.Serializable {
     private int raceId;
