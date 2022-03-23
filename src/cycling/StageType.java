@@ -4,7 +4,7 @@ public enum StageType {
     /**
      * Used for flat stages
      */
-    FlAT,
+    FLAT,
 
     /**
      * Used for rolling terrain stages

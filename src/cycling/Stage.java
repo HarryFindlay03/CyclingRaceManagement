@@ -21,7 +21,7 @@ public class Stage implements java.io.Serializable {
     //stageState: false -> nothing, true -> 'waiting for results'
     private boolean stageState;
 
-    private static ArrayList<Integer> stageIds = new ArrayList<Integer>();
+    private static int counter = 0;
 
     private ArrayList<Segment> segments = new ArrayList<Segment>();
 
@@ -34,13 +34,8 @@ public class Stage implements java.io.Serializable {
         this.type = type;
         stageState = false;
 
-        if(stageIds.size() == 0) {
-            stageId = 0;
-            stageIds.add(stageId);
-        } else {
-            stageId = stageIds.get(stageIds.size() - 1) + 1;
-            stageIds.add(stageId);
-        }
+        stageId = counter;
+        counter++;
     }
 
     public int getRaceId() {

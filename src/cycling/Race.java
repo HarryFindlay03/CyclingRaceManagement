@@ -11,8 +11,9 @@ import java.util.Iterator;
 public class Race implements java.io.Serializable{
     private String name;
     private String description;
-    private int Id;
-    private static ArrayList<Integer> raceIds = new ArrayList<Integer>();
+    private int raceId;
+
+    private static int counter = 0;
 
     private ArrayList<Stage> stages = new ArrayList<Stage>();
 
@@ -20,14 +21,8 @@ public class Race implements java.io.Serializable{
         this.name = name;
         this.description = description;
 
-        if(raceIds.size() == 0) {
-            Id = 0;
-            raceIds.add(Id);
-        } else {
-            int tempRaceId = raceIds.get(raceIds.size() - 1);
-            Id = tempRaceId + 1;
-            raceIds.add(Id);
-        }
+        raceId = counter;
+        counter++;
     }
 
     @Override
@@ -40,7 +35,7 @@ public class Race implements java.io.Serializable{
             totalLength += stage.getLength();
         }
 
-        String str = String.format("Race[name=%s, description=%s, Id=%x, numOfStages=%x, totalLength=%f]", name, description, Id, numOfStages, totalLength);
+        String str = String.format("Race[name=%s, description=%s, Id=%x, numOfStages=%x, totalLength=%f]", name, description, raceId, numOfStages, totalLength);
         return str;
     }
 
@@ -64,12 +59,8 @@ public class Race implements java.io.Serializable{
         this.description = description;
     }
 
-    public int getId() {
-        return Id;
-    }
-
     public int getRaceId() {
-        return Id;
+        return raceId;
     }
 
     public void addStageToRace(Stage stage) {
