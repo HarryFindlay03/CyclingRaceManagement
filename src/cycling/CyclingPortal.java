@@ -1,9 +1,11 @@
 package cycling;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -534,7 +536,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public LocalTime getRiderAdjustedElapsedTimeInStage(int stageId, int riderId) throws IDNotRecognisedException {
-		//TODO -> do we need to work with nanoseconds?
 		//Checking the stage type, if stagetype is TT then do not adjust the time
 		StageType type = null;
 		for(Race race : CyclingPortalRaces) {
@@ -560,12 +561,14 @@ public class CyclingPortal implements CyclingPortalInterface {
 						LocalTime riderFinish = result.getFinishTime();
 						LocalTime otherFinish = allResult.getFinishTime();
 
-						if(Result.getElapsedTime(otherFinish, riderFinish).getSecond() < 1) {
+						//Result.getElapsedTime(otherFinish, riderFinish).getSecond()
+						if(ChronoUnit.SECONDS.between(otherFinish, riderFinish) < 1) {
 							//update the finish time in the stage for the rider
 							//result.setFinishTime(allResult.getFinishTime());
-							System.out.println("Changing elapsed time");
+							System.out.println("adjusting time");
 							return Result.getElapsedTime(allResult.getCheckpoints().get(0), allResult.getFinishTime());
 						}
+						System.out.println("not adjusting time");
 						//Gap was greater than (or equal to) a second.
 						return Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
 					}
@@ -625,14 +628,54 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public LocalTime[] getRankedAdjustedElapsedTimesInStage(int stageId) throws IDNotRecognisedException {
-		//TODO: get working
-		for(Team team : CyclingPortalTeams) {
-			for(Rider rider : team.getRiders()) {
+		ArrayList<Rider> riders = new ArrayList<Rider>();
 
+		LocalTime[] returnArr;
+		for(Team team: CyclingPortalTeams){
+			for(Rider rider : team.getRiders()){
+				riders.add(rider);
 			}
 		}
 
-		throw new IDNotRecognisedException("ID not recognised in the system!");
+		ArrayList<Result> resultsInStage = new ArrayList<Result>();
+		for (Result result : CyclingPortalResults) {
+			if (result.getStageId() == stageId) {
+				Result tempResult = new Result(result.getRaceId(), result.getStageId(), result.getRiderId(), result.getCheckpoints().toArray(new LocalTime[0]));
+				resultsInStage.add(tempResult);
+			}
+		}
+		if(resultsInStage.size() == 0){
+			return new LocalTime[0];
+		}
+
+		for(Race race : CyclingPortalRaces) {
+			for (Stage stage : race.getStages()) {
+				if (stage.getStageId() == stageId) {
+
+					//Get the orderedList of results in the stage (like getRidersRankInStage but we want the result objects)
+					for(Rider rider : riders){
+						for(Result result: resultsInStage){
+							if(result.getRiderId()==rider.getRiderId()){
+								result.setResultElapsedTime(getRiderAdjustedElapsedTimeInStage(stageId, result.getRiderId()));
+							}
+						}
+					}
+
+					ArrayList<Result> endSortedResults = new ArrayList<>(resultsInStage);
+					Comparator<Result> comparator = new AdjustedResultComparator();
+					endSortedResults.sort(comparator);
+
+					returnArr = new LocalTime[endSortedResults.size()];
+					for(int i = 0; i<endSortedResults.size(); i++){
+						returnArr[i] = endSortedResults.get(i).getResultElapsedTime();
+					}
+
+					return returnArr;
+				}
+			}
+		}
+
+		throw new IDNotRecognisedException("Id not recognized in the system!");
 	}
 
 	@Override

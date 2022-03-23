@@ -15,6 +15,7 @@ public class Result {
     private int riderId;
     private int resultId;
 
+    private LocalTime resultElapsedTime;
     private int points = 0;
     private int mountainPoints = 0;
 
@@ -38,6 +39,14 @@ public class Result {
             resultId = resultIds.get(resultIds.size() - 1) + 1;
             resultIds.add(resultId);
         }
+    }
+
+    public LocalTime getResultElapsedTime() {
+        return resultElapsedTime;
+    }
+
+    public void setResultElapsedTime(LocalTime resultElapsedTime) {
+        this.resultElapsedTime = resultElapsedTime;
     }
 
     public int getRaceId() {
@@ -95,7 +104,7 @@ public class Result {
         int hours = (int) ChronoUnit.HOURS.between(startTime, finishTime);
         int minutes = (int) ChronoUnit.MINUTES.between(startTime, finishTime) % 60;
         int seconds = (int) ChronoUnit.SECONDS.between(startTime, finishTime) % 60;
-        //int nanoSeconds = (int) ChronoUnit.NANOS.between(startTime, finishTime) % 1000000000;
+//        int nanoSeconds = (int) ChronoUnit.NANOS.between(startTime, finishTime) % 60;
         return LocalTime.of(hours, minutes, seconds);
     }
 
