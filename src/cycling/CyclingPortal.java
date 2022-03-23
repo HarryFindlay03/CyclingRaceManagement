@@ -28,7 +28,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 	private ArrayList<Race> CyclingPortalRaces = new ArrayList<Race>();
 	private ArrayList<Team> CyclingPortalTeams = new ArrayList<Team>();
 	private ArrayList<Result> CyclingPortalResults = new ArrayList<Result>();
-	//private ArrayList<RaceResult> CyclingPortalRaceResults = new ArrayList<RaceResult>();
 
 	//CONSTANT POINTS ARRAYS
 	private final int[] flatPoints = new int[]{50, 30, 20, 18, 16, 14, 12, 10, 8, 7, 6, 5, 4, 3, 2};
@@ -647,7 +646,8 @@ public class CyclingPortal implements CyclingPortalInterface {
 					ArrayList<Result> resultsInStage = new ArrayList<Result>();
 					for(Result result : CyclingPortalResults) {
 						if(result.getStageId() == stageId) {
-							resultsInStage.add(result);
+							Result tempResult = new Result(result.getRaceId(), result.getStageId(), result.getRiderId(), result.getCheckpoints().toArray(new LocalTime[0]));
+							resultsInStage.add(tempResult);
 						}
 					}
 
@@ -749,7 +749,8 @@ public class CyclingPortal implements CyclingPortalInterface {
 				ArrayList<Result> resultsInStage = new ArrayList<Result>();
 				for(Result result : CyclingPortalResults) {
 					if(result.getStageId() == stageId) {
-						resultsInStage.add(result);
+						Result tempResult = new Result(result.getRaceId(), result.getStageId(), result.getRiderId(), result.getCheckpoints().toArray(new LocalTime[0]));
+						resultsInStage.add(tempResult);
 					}
 				}
 
@@ -992,11 +993,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 					//ridersRankInStage
 					int[] ridersRankInStage = getRidersRankInStage(stage.getStageId());
 					int[] ridersMountainPointsInStage = getRidersMountainPointsInStage(stage.getStageId());
-
-					System.out.println("riders moutain points in stage");
-					for(Integer elem : ridersMountainPointsInStage) {
-						System.out.println(elem);
-					}
 
 					for(int i = 0; i < ridersRankInStage.length; i++) {
 						for(RaceResult raceResult : raceResults) {

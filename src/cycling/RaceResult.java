@@ -19,8 +19,6 @@ public class RaceResult {
     private int totalPoints = 0;
     private int totalMountainPoints = 0;
 
-    private static ArrayList<RaceResult> CyclingPortalRaceResults = new ArrayList<RaceResult>();
-
     public RaceResult(int raceId, int riderId) {
         this.raceId = raceId;
         this.riderId = riderId;
