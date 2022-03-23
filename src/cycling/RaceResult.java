@@ -1,6 +1,7 @@
 package cycling;
 
 import java.time.Duration;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
@@ -15,7 +16,7 @@ public class RaceResult {
     private int raceId;
     private int riderId;
 
-    private Duration totalElapsedTime = Duration.ofHours(0);
+    private LocalTime totalElapsedTime = LocalTime.of(0, 0, 0);
     private int totalPoints = 0;
     private int totalMountainPoints = 0;
 
@@ -33,12 +34,13 @@ public class RaceResult {
         return riderId;
     }
 
-    public Duration getTotalElapsedTime() {
+    public LocalTime getTotalElapsedTime() {
         return totalElapsedTime;
     }
 
-    public void addToElapsedTime(Duration duration) {
-        totalElapsedTime.plus(duration);
+    public void addToElapsedTime(LocalTime localTime) {
+        LocalTime t = totalElapsedTime.plusHours(localTime.getHour()).plusMinutes(localTime.getMinute()).plusSeconds(localTime.getSecond());
+        totalElapsedTime = t;
     }
 
     public int getTotalPoints() {

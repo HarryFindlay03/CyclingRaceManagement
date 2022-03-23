@@ -562,13 +562,11 @@ public class CyclingPortal implements CyclingPortalInterface {
 						LocalTime otherFinish = allResult.getFinishTime();
 
 						//Result.getElapsedTime(otherFinish, riderFinish).getSecond()
-						if(ChronoUnit.SECONDS.between(otherFinish, riderFinish) < 1) {
+						if(ChronoUnit.SECONDS.between(otherFinish, riderFinish) < 1 && ChronoUnit.SECONDS.between(otherFinish, riderFinish) >= 0) {
 							//update the finish time in the stage for the rider
 							//result.setFinishTime(allResult.getFinishTime());
-							System.out.println("adjusting time");
 							return Result.getElapsedTime(allResult.getCheckpoints().get(0), allResult.getFinishTime());
 						}
-						System.out.println("not adjusting time");
 						//Gap was greater than (or equal to) a second.
 						return Result.getElapsedTime(result.getCheckpoints().get(0), result.getFinishTime());
 					}
@@ -917,59 +915,51 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public LocalTime[] getGeneralClassificationTimesInRace(int raceId) throws IDNotRecognisedException {
-		//TODO: USING ADJUSTED ELAPSED TIME
-		//TODO: get working
-		boolean isFound = false;
-
 		LocalTime[] returnArr;
 
-		//Local RaceResult list that we will query to add to returnArr
+		//For every rider create a new RaceResult object
 		ArrayList<RaceResult> raceResults = new ArrayList<RaceResult>();
-
-		//Cache a list of riders so that a nested for loop is not needed
-		//Finding all the riders in the race
-		ArrayList<Rider> riders = new ArrayList<Rider>();
 		for(Team team : CyclingPortalTeams) {
 			for(Rider rider : team.getRiders()) {
-				riders.add(rider);
-				RaceResult newRaceResult = new RaceResult(raceId, rider.getRiderId());
-				raceResults.add(newRaceResult);
+				raceResults.add(new RaceResult(raceId, rider.getRiderId()));
 			}
 		}
 
-		for(Rider rider : riders) {
-			for(Result result : CyclingPortalResults) {
-				if(result.getRaceId() == raceId && result.getRiderId() == rider.getRiderId()) {
-					isFound = true;
-					for(RaceResult raceResult : raceResults) {
-						if(raceResult.getRiderId() == rider.getRiderId() && raceResult.getRaceId() == raceId) {
-							//Convert localtime to elapsed time
-							raceResult.addToElapsedTime(Duration.between(result.getCheckpoints().get(0), result.getFinishTime()));
+		for(Race race : CyclingPortalRaces) {
+			if(race.getRaceId() == raceId) {
+				for(Stage stage : race.getStages()) {
+					//ridersRankInStage
+					int[] ridersRankInStage = getRidersRankInStage(stage.getStageId());
+					LocalTime[] ridersAdjustedElapsedTimes = getRankedAdjustedElapsedTimesInStage(stage.getStageId());
+
+					for(int i = 0; i < ridersAdjustedElapsedTimes.length; i++) {
+						for(RaceResult raceResult : raceResults) {
+							if(raceResult.getRiderId() == ridersRankInStage[i]) {
+								raceResult.addToElapsedTime(ridersAdjustedElapsedTimes[i]);
+							}
 						}
 					}
 				}
+
+				if(raceResults.size() == 0) {
+					return new LocalTime[0];
+				}
+
+				//sort the raceResults and get the riderIds linked with them
+				ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
+				Comparator<RaceResult> comparator = new AdjustedRaceResultComparator();
+				sorted.sort(comparator);
+
+				returnArr = new LocalTime[sorted.size()];
+				for(int z = 0; z < sorted.size(); z++) {
+					returnArr[z] = sorted.get(z).getTotalElapsedTime();
+				}
+
+				return returnArr;
 			}
 		}
 
-		if(!isFound) {
-			throw new IDNotRecognisedException("ID not recognised in the system!");
-		}
-
-		ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
-		Comparator<RaceResult> comparator = new RaceResultComparator();
-		sorted.sort(comparator);
-
-		//adding points into returnArr
-		returnArr = new LocalTime[raceResults.size()];
-		for(int z = 0; z < raceResults.size(); z++) {
-			Duration d = sorted.get(z).getTotalElapsedTime();
-			int hours = d.toHoursPart();
-			int minutes = d.toMinutesPart();
-			int seconds = d.toSecondsPart();
-			returnArr[z] = LocalTime.of(hours, minutes, seconds);
-		}
-
-		return returnArr;
+		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
 	@Override
@@ -1067,8 +1057,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int[] getRidersGeneralClassificationRank(int raceId) throws IDNotRecognisedException {
-		//TODO: USING ADJUSTED ELAPSED TIME
-		//TODO: get working
 		int[] returnArr;
 
 		//For every rider create a new RaceResult object
@@ -1084,24 +1072,26 @@ public class CyclingPortal implements CyclingPortalInterface {
 				for(Stage stage : race.getStages()) {
 					//ridersRankInStage
 					int[] ridersRankInStage = getRidersRankInStage(stage.getStageId());
-					int[] ridersPointsInStage = getRidersPointsInStage(stage.getStageId());
+					LocalTime[] ridersAdjustedElapsedTimes = getRankedAdjustedElapsedTimesInStage(stage.getStageId());
 
-					for(int i = 0; i < ridersRankInStage.length; i++) {
+					for(int i = 0; i < ridersAdjustedElapsedTimes.length; i++) {
 						for(RaceResult raceResult : raceResults) {
 							if(raceResult.getRiderId() == ridersRankInStage[i]) {
-								raceResult.addToTotalPoints(ridersPointsInStage[i]);
+								raceResult.addToElapsedTime(ridersAdjustedElapsedTimes[i]);
 							}
 						}
 					}
+				}
 
+				if(raceResults.size() == 0) {
+					return new int[0];
 				}
 
 				//sort the raceResults and get the riderIds linked with them
 				ArrayList<RaceResult> sorted = new ArrayList<>(raceResults);
-				Comparator<RaceResult> comparator = new RaceResultPointsComparator();
+				Comparator<RaceResult> comparator = new AdjustedRaceResultComparator();
 				sorted.sort(comparator);
 
-				//adding points into returnArr
 				returnArr = new int[sorted.size()];
 				for(int z = 0; z < sorted.size(); z++) {
 					returnArr[z] = sorted.get(z).getRiderId();
@@ -1112,6 +1102,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 		}
 
 		throw new IDNotRecognisedException("ID not recognised in the system!");
+
 	}
 
 	@Override
@@ -1140,7 +1131,10 @@ public class CyclingPortal implements CyclingPortalInterface {
 							}
 						}
 					}
+				}
 
+				if(raceResults.size() == 0) {
+					return new int[0];
 				}
 
 				//sort the raceResults and get the riderIds linked with them
@@ -1187,7 +1181,10 @@ public class CyclingPortal implements CyclingPortalInterface {
 							}
 						}
 					}
+				}
 
+				if(raceResults.size() == 0) {
+					return new int[0];
 				}
 
 				//sort the raceResults and get the riderIds linked with them
