@@ -9,7 +9,7 @@ import java.util.Collections;
 /**
  * Result keeps track of results within a certain stage
  */
-public class Result {
+public class Result implements java.io.Serializable {
     private int raceId;
     private int stageId;
     private int riderId;

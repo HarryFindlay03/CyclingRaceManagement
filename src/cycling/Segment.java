@@ -2,7 +2,7 @@ package cycling;
 
 import java.util.ArrayList;
 
-public class Segment {
+public class Segment implements java.io.Serializable {
     private int segmentId;
     protected SegmentType type;
     protected double location;

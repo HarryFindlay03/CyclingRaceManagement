@@ -2,7 +2,7 @@ package cycling;
 
 import java.util.ArrayList;
 
-public class Team {
+public class Team implements java.io.Serializable {
     private String name;
     private String description;
     private int teamId;

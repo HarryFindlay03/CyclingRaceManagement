@@ -8,7 +8,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Stage {
+public class Stage implements java.io.Serializable {
     private String stageName;
     private String description;
     private double length;

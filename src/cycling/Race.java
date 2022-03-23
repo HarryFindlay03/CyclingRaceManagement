@@ -8,7 +8,7 @@ import java.util.Iterator;
  *@author Harry Findlay, Vihan Sharma
  */
 
-public class Race {
+public class Race implements java.io.Serializable{
     private String name;
     private String description;
     private int Id;

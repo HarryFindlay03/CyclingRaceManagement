@@ -1,7 +1,8 @@
 package cycling;
 
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Array;
+import java.text.FieldPosition;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -11,12 +12,7 @@ import java.util.Comparator;
 
 
 //TODO:
-//when deleting a rider delete all of the results that are associated with it
-//sorting segments into location order within a stage
 //serializable
-//working with nanoseconds
-//adjusted elapsed time
-//points is looping through too many times and getting the points too many times somewhere
 
 
 /**
@@ -50,6 +46,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public int createRace(String name, String description) throws IllegalNameException, InvalidNameException {
+
 		for(Race race: CyclingPortalRaces) {
 			if(race.getName() == name) {
 				throw new IllegalNameException("Name already in the system!");
@@ -63,7 +60,9 @@ public class CyclingPortal implements CyclingPortalInterface {
 		if(name.isEmpty()) {
 			throw new InvalidNameException("Name has been left empty!");
 		}
-		//TODO check number of characters is not greater than system length
+		if(name.length() > 30) {
+			throw new InvalidNameException("Name is too long!");
+		}
 
 		Race newRace = new Race(name, description);
 		CyclingPortalRaces.add(newRace);
@@ -264,13 +263,15 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public void removeSegment(int segmentId) throws IDNotRecognisedException, InvalidStageStateException {
-		//TODO: Stage states
-
 		boolean isFound = false;
+
 		for(Race race : CyclingPortalRaces) {
 			for(Stage stage : race.getStages()) {
 				for(Segment segment : stage.getStageSegments()) {
 					if(segment.getSegmentId() == segmentId) {
+						if(stage.getStageState()) {
+							throw new InvalidStageStateException("Stage already concluded!");
+						}
 						//Segment has been found
 						//Segment can now be removed
 						isFound = true;
@@ -290,7 +291,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public void concludeStagePreparation(int stageId) throws IDNotRecognisedException, InvalidStageStateException {
-		// TODO Check this function works
 		boolean isFound = false;
 
 		for(Race race : CyclingPortalRaces) {
@@ -454,6 +454,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 	@Override
 	public void removeRider(int riderId) throws IDNotRecognisedException {
 		boolean isFound = false;
+		//removing rider from team
 		for(Team team : CyclingPortalTeams) {
 			for(Rider rider : team.getRiders()) {
 				if(rider.getRiderId() == riderId) {
@@ -468,49 +469,66 @@ public class CyclingPortal implements CyclingPortalInterface {
 			throw new IDNotRecognisedException("ID not recognised in the system!");
 		}
 
+		//removing rider from results
+		for(Result result : CyclingPortalResults) {
+			if(result.getRiderId() == riderId) {
+				CyclingPortalResults.remove(result);
+				break;
+			}
+		}
 	}
 
 	@Override
 	public void registerRiderResultsInStage(int stageId, int riderId, LocalTime... checkpoints)
 			throws IDNotRecognisedException, DuplicatedResultException, InvalidCheckpointsException,
 			InvalidStageStateException {
-		// TODO InvalidCheckpointsException
-			boolean isFoundStage = false;
-			boolean isFoundRider = false;
 
-			for(Race race: CyclingPortalRaces){
-				for(Stage stage: race.getStages()){
-					if(stage.getStageId()==stageId){
-						isFoundStage= true;
-						if(!stage.getStageState()) {
-							throw new InvalidStageStateException("Stage under development!");
-						}
-						for(Team team: CyclingPortalTeams){
-							for(Rider rider: team.getRiders()){
-								if(rider.getRiderId()==riderId){
-									isFoundRider = true;
-									//both ids found
-									for(Result result : CyclingPortalResults) {
-										if(result.getRiderId() == riderId && result.getStageId() == stageId) {
-											throw new DuplicatedResultException("Result already in system for rider!");
-										}
+		//Invalid Checkpoints exception
+		for(int i = 0; i < checkpoints.length; i++) {
+			LocalTime low = checkpoints[i];
+			for(int j = i; j < checkpoints.length; j++) {
+				if(low.compareTo(checkpoints[j]) > 0) {
+					throw new InvalidCheckpointsException("Checkpoints not in chronological order!");
+				}
+			}
+		}
+
+		boolean isFoundStage = false;
+		boolean isFoundRider = false;
+
+		for(Race race: CyclingPortalRaces){
+			for(Stage stage: race.getStages()){
+				if(stage.getStageId()==stageId){
+					isFoundStage= true;
+					if(!stage.getStageState()) {
+						throw new InvalidStageStateException("Stage under development!");
+					}
+					for(Team team: CyclingPortalTeams){
+						for(Rider rider: team.getRiders()){
+							if(rider.getRiderId()==riderId){
+								isFoundRider = true;
+								//both ids found
+								for(Result result : CyclingPortalResults) {
+									if(result.getRiderId() == riderId && result.getStageId() == stageId) {
+										throw new DuplicatedResultException("Result already in system for rider!");
 									}
-									Result result = new Result(stage.getRaceId(), stageId, riderId, checkpoints);
-									CyclingPortalResults.add(result);
 								}
-
+								Result result = new Result(stage.getRaceId(), stageId, riderId, checkpoints);
+								CyclingPortalResults.add(result);
 							}
+
 						}
 					}
 				}
 			}
+		}
 
-			if (!isFoundStage){
-				throw new IDNotRecognisedException("Stage ID not recognised in the system!");
-			}
-			if(!isFoundRider) {
-				throw new IDNotRecognisedException("Rider ID not recognised in the system!");
-			}
+		if (!isFoundStage){
+			throw new IDNotRecognisedException("Stage ID not recognised in the system!");
+		}
+		if(!isFoundRider) {
+			throw new IDNotRecognisedException("Rider ID not recognised in the system!");
+		}
 
 
 	}
@@ -879,20 +897,61 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public void eraseCyclingPortal() {
-		// TODO Auto-generated method stub
-
+		CyclingPortalRaces.clear();
+		CyclingPortalTeams.clear();
+		CyclingPortalResults.clear();
 	}
 
 	@Override
 	public void saveCyclingPortal(String filename) throws IOException {
 		// TODO Auto-generated method stub
+		Save saveObject = new Save(CyclingPortalRaces, CyclingPortalTeams, CyclingPortalResults);
+		try {
+			FileOutputStream file = new FileOutputStream(filename);
+			ObjectOutputStream out = new ObjectOutputStream(file);
+			out.writeObject(saveObject);
 
+			out.close();
+			file.close();
+
+			System.out.println("Object has been serialized");
+
+		}
+		catch (IOException e) {
+			throw new IOException("IO exception found");
+		}
 	}
 
 	@Override
 	public void loadCyclingPortal(String filename) throws IOException, ClassNotFoundException {
 		// TODO Auto-generated method stub
+		try
+		{
+			// Reading the object from a file
+			FileInputStream file = new FileInputStream(filename);
+			ObjectInputStream in = new ObjectInputStream(file);
 
+			// Method for deserialization of object
+			Save saveObject = (Save)in.readObject();
+
+			CyclingPortalRaces = saveObject.getCyclingPortalRaces();
+			CyclingPortalTeams = saveObject.getCyclingPortalTeams();
+			CyclingPortalResults = saveObject.getCyclingPortalResults();
+
+			in.close();
+			file.close();
+
+			System.out.println("Object has been deserialized ");
+		}
+		catch(IOException ex)
+		{
+			throw new IOException("IOException was caught!");
+
+		}
+		catch(ClassNotFoundException ex)
+		{
+			throw new ClassNotFoundException("Class Not Found! ");
+		}
 	}
 
 	@Override
