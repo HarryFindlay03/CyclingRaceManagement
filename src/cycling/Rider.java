@@ -2,7 +2,12 @@ package cycling;
 
 import java.util.ArrayList;
 
-public class Rider {
+/**
+ * Rider class that holds all of the information about a rider
+ *  @author Harry Findlay, Vihan Sharma
+ */
+
+public class Rider implements java.io.Serializable {
     private String name;
     private int yearOfBirth;
     private int riderId;

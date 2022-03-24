@@ -8,7 +8,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Stage {
+/**
+ * Stage class that holds all of the information about a stage
+ *  @author Harry Findlay, Vihan Sharma
+ */
+public class Stage implements java.io.Serializable {
     private String stageName;
     private String description;
     private double length;
@@ -21,11 +25,12 @@ public class Stage {
     //stageState: false -> nothing, true -> 'waiting for results'
     private boolean stageState;
 
-    private static ArrayList<Integer> stageIds = new ArrayList<Integer>();
+    private static int counter = 0;
 
     private ArrayList<Segment> segments = new ArrayList<Segment>();
 
     public Stage(int raceId, String stageName, String description, double length, LocalDateTime startTime, StageType type) {
+        assert(raceId == (int) raceId);
         this.raceId = raceId;
         this.stageName = stageName;
         this.description = description;
@@ -34,13 +39,8 @@ public class Stage {
         this.type = type;
         stageState = false;
 
-        if(stageIds.size() == 0) {
-            stageId = 0;
-            stageIds.add(stageId);
-        } else {
-            stageId = stageIds.get(stageIds.size() - 1) + 1;
-            stageIds.add(stageId);
-        }
+        stageId = counter;
+        counter++;
     }
 
     public int getRaceId() {
@@ -93,10 +93,20 @@ public class Stage {
 
     public ArrayList<Segment> getStageSegments() { return segments; }
 
+    /**
+     * Returns the stage state of a stage
+     * @return boolean value representing the stage stage of a stage
+     */
     public boolean getStageState() {
         return stageState;
     }
 
+    /**
+     * Set the stage state of a stage using a boolean
+     * If the stage state is true then a stage is 'waiting for results'
+     * If the stage stage is false then a stage is under development.
+     * @param stageState Boolean value that represents the stage stage.
+     */
     public void setStageState(boolean stageState) {
         this.stageState = stageState;
     }

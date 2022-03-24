@@ -1,10 +1,13 @@
 package cycling;
-
+/**
+ * StageType enum class that holds all of the different types of stages
+ *  @author Harry Findlay, Vihan Sharma
+ */
 public enum StageType {
     /**
      * Used for flat stages
      */
-    FlAT,
+    FLAT,
 
     /**
      * Used for rolling terrain stages

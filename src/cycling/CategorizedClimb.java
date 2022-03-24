@@ -1,5 +1,10 @@
 package cycling;
 
+/**
+ * Child class of segment that extends it by allowing climb attributes to be added like average gradient
+ * and length.
+ * @author Harry Findlay, Vihan Sharma
+ */
 public class CategorizedClimb extends Segment{
     private double averageGradient;
     private double length;
