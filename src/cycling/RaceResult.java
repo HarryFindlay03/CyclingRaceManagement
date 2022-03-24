@@ -7,10 +7,7 @@ import java.util.ArrayList;
 
 /**
  * RaceResult stores a rider result within a whole race
- * i.e.:
- *  total elapsed time
- *  total points
- *  total mountain points
+ * i.e.: total elapsed time; total points; total mountain points
  */
 public class RaceResult {
     private int raceId;

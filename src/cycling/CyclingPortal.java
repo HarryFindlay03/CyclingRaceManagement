@@ -55,6 +55,7 @@ public class CyclingPortal implements CyclingPortalInterface {
 			throw new InvalidNameException("Name is null!");
 		}
 		if(name.isEmpty()) {
+			assert(name.isEmpty());
 			throw new InvalidNameException("Name has been left empty!");
 		}
 		if(name.length() > 30) {
@@ -72,12 +73,12 @@ public class CyclingPortal implements CyclingPortalInterface {
 
 	@Override
 	public String viewRaceDetails(int raceId) throws IDNotRecognisedException {
-
 		for(Race race : CyclingPortalRaces) {
 			if(race.getRaceId() == raceId) {
 				return race.toString();
 			}
 		}
+		assert(CyclingPortalRaces.size() > 0);
 		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 
@@ -154,8 +155,6 @@ public class CyclingPortal implements CyclingPortalInterface {
 				return raceStages;
 			}
 		}
-
-		//If return is not ran then ID has not been found in the system!
 		throw new IDNotRecognisedException("ID not recognised in the system!");
 	}
 

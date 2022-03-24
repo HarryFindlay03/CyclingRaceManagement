@@ -21,6 +21,7 @@ public class Segment implements java.io.Serializable {
             segmentId = 0;
             segmentIds.add(segmentId);
         } else {
+            assert(segmentIds.size() > 0);
             segmentId = segmentIds.get(segmentIds.size() - 1) + 1;
             segmentIds.add(segmentId);
         }

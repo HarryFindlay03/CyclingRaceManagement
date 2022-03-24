@@ -36,6 +36,7 @@ public class Race implements java.io.Serializable{
         }
 
         String str = String.format("Race[name=%s, description=%s, Id=%x, numOfStages=%x, totalLength=%f]", name, description, raceId, numOfStages, totalLength);
+        assert(str.length() > 0);
         return str;
     }
 

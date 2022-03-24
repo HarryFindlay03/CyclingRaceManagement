@@ -7,6 +7,11 @@ import java.util.Comparator;
  */
 public class ResultCheckpointsComparator implements Comparator<Result> {
     int pos;
+
+    /**
+     * Constructor that sets where the position in the checkpoints array the comparator should look
+     * @param pos The position within the checkpoints array where the comparator should sort at.
+     */
     public ResultCheckpointsComparator(int pos) {
         this.pos = pos;
     }

@@ -30,6 +30,7 @@ public class Stage implements java.io.Serializable {
     private ArrayList<Segment> segments = new ArrayList<Segment>();
 
     public Stage(int raceId, String stageName, String description, double length, LocalDateTime startTime, StageType type) {
+        assert(raceId == (int) raceId);
         this.raceId = raceId;
         this.stageName = stageName;
         this.description = description;
@@ -92,10 +93,20 @@ public class Stage implements java.io.Serializable {
 
     public ArrayList<Segment> getStageSegments() { return segments; }
 
+    /**
+     * Returns the stage state of a stage
+     * @return boolean value representing the stage stage of a stage
+     */
     public boolean getStageState() {
         return stageState;
     }
 
+    /**
+     * Set the stage state of a stage using a boolean
+     * If the stage state is true then a stage is 'waiting for results'
+     * If the stage stage is false then a stage is under development.
+     * @param stageState Boolean value that represents the stage stage.
+     */
     public void setStageState(boolean stageState) {
         this.stageState = stageState;
     }
